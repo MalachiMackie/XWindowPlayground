@@ -2,13 +2,16 @@
 #define SHAPE_H
 
 #include <X11/Xlib.h>
+#include "../Color.h"
 
 namespace XWindowPlayground {
     class Shape
     {
     protected:
         GC m_graphicsContext;
-        int m_borderColor;
+        Color m_color;
+
+        bool m_fill;
 
     public:
         virtual ~Shape() {};
@@ -17,7 +20,8 @@ namespace XWindowPlayground {
 
         virtual void InitShape(Display* display, Window* window);
 
-        void SetBorderColor(int color) { m_borderColor = color; }
+        void SetColor(Color color) { m_color = color; }
+        void Fill() { m_fill = true; }
 
         const GC& GetGC() const { return m_graphicsContext; }
     };

@@ -7,7 +7,10 @@ namespace XWindowPlayground
     {
         if (display && window)
         {
-            XDrawArc(display, window, m_graphicsContext, m_x, m_y, m_width, m_height, 0, 360 * 64);
+            if (m_fill)
+                XFillArc(display, window, m_graphicsContext, m_x, m_y, m_width, m_height, 0, 360 * 64);
+            else
+                XDrawArc(display, window, m_graphicsContext, m_x, m_y, m_width, m_height, 0, 360 * 64);
         }
     }
 }

@@ -66,7 +66,6 @@ namespace XWindowPlayground
 
     void Manager::AddShape(Shape* shape)
     {
-        shape->SetBorderColor(m_colorWhite);
         shape->InitShape(m_display, m_window);
         m_shapes.push_back(shape);
     }
