@@ -3,13 +3,13 @@
 
 namespace XWindowPlayground
 {
-    void Square::Draw(Display* dpy, Window window) const
+    void Square::Draw()
     {
-        if (dpy && window) {
+        if (m_display && m_window) {
             if (m_fill)
-                XFillRectangle(dpy, window, m_graphicsContext, m_x, m_y, m_width, m_height);
+                XFillRectangle(m_display, *m_window, m_graphicsContext, m_x, m_y, m_width, m_height);
             else
-                XDrawRectangle(dpy, window, m_graphicsContext, m_x, m_y, m_width, m_height);
+                XDrawRectangle(m_display, *m_window, m_graphicsContext, m_x, m_y, m_width, m_height);
         }
     }
 }

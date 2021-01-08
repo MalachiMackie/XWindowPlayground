@@ -3,14 +3,14 @@
 
 namespace XWindowPlayground
 {
-    void Circle::Draw(Display* display, Window window) const
+    void Circle::Draw()
     {
-        if (display && window)
+        if (m_display && m_window)
         {
             if (m_fill)
-                XFillArc(display, window, m_graphicsContext, m_x, m_y, m_width, m_height, 0, 360 * 64);
+                XFillArc(m_display, *m_window, m_graphicsContext, m_x, m_y, m_width, m_height, 0, 360 * 64);
             else
-                XDrawArc(display, window, m_graphicsContext, m_x, m_y, m_width, m_height, 0, 360 * 64);
+                XDrawArc(m_display, *m_window, m_graphicsContext, m_x, m_y, m_width, m_height, 0, 360 * 64);
         }
     }
 }

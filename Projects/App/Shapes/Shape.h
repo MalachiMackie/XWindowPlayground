@@ -2,25 +2,30 @@
 #define SHAPE_H
 
 #include <X11/Xlib.h>
+#include "../Drawable.h"
 #include "../Color.h"
 
 namespace XWindowPlayground {
-    class Shape
+    class Shape : public Drawable
     {
+    private:
+        bool m_initColorOnInit = false;
+
     protected:
         GC m_graphicsContext;
         Color m_color;
 
         bool m_fill;
 
+    private:
+        void InitColor();
+
     public:
         virtual ~Shape() {};
 
-        virtual void Draw(Display* dpy, Window window) const = 0;
+        virtual void Init(Display* display, Window* window) override;
 
-        virtual void InitShape(Display* display, Window* window);
-
-        void SetColor(Color color) { m_color = color; }
+        void SetColor(Color color);
         void Fill() { m_fill = true; }
 
         const GC& GetGC() const { return m_graphicsContext; }

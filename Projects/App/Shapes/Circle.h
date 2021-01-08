@@ -25,7 +25,7 @@ namespace XWindowPlayground
         
         virtual ~Circle() override {};
 
-        virtual void Draw(Display* display, Window window) const override;
+        virtual void Draw() override;
     };
 }
 

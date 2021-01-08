@@ -23,7 +23,7 @@ namespace XWindowPlayground
         {};
         virtual ~Square() override {};
 
-        virtual void Draw(Display* dpy, Window window) const override;
+        virtual void Draw() override;
     };
 }
 

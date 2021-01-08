@@ -1,23 +1,38 @@
+#include <iostream>
+#include <functional>
+
 #include "Shapes/Shape.h"
 #include "Shapes/Square.h"
 #include "Shapes/Circle.h"
+#include "Widgets/Widget.h"
+#include "Widgets/Button.h"
 #include "Manager.h"
 #include "Color.h"
 
+using namespace XWindowPlayground;
+
 int main() {
-    XWindowPlayground::Manager* manager = new XWindowPlayground::Manager{};
+    Manager* manager = new Manager{1280, 720};
     manager->Initialize();
 
-    XWindowPlayground::Shape* square = new XWindowPlayground::Square{0, 0, 100, 100};
-    XWindowPlayground::Color squareFillColor;
-    squareFillColor.Set(65000, 0, 0);
-    square->SetColor(squareFillColor);
-    square->Fill();
-    manager->AddShape(square);
+    Button* button = new Button{50, 50, 100, 100, 5};
+    button->SetColor(65000, 0, 0);
+    button->SetOnLeftClick([](){
+        std::cout << "Button One" << std::endl;
+    });
+    manager->AddDrawable(button);
 
-    XWindowPlayground::Shape* circle = new XWindowPlayground::Circle{0, 0, 100, 100};
-    circle->Fill();
-    manager->AddShape(circle);
+    Button* secondButton = new Button{160, 50, 100, 35, 3};
+    secondButton->SetColor(65000, 0, 0);
+    secondButton->SetOnRightClick([](){
+        std::cout << "Button Two" << std::endl;
+    });
+    manager->AddDrawable(secondButton);
+
+
+    // XWindowPlayground::Shape* circle = new XWindowPlayground::Circle{0, 0, 100, 100};
+    // circle->Fill();
+    // manager->AddDrawable(circle);
 
     int returnCode = 0;
     while (returnCode == 0)
