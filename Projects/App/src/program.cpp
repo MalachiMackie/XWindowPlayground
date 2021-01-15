@@ -1,13 +1,7 @@
 #include <iostream>
 #include <functional>
 
-#include "Shapes/Shape.h"
-#include "Shapes/Square.h"
-#include "Shapes/Circle.h"
-#include "Widgets/Widget.h"
-#include "Widgets/Button.h"
-#include "Manager.h"
-#include "Color.h"
+#include <XWindowLib.h>
 
 using namespace XWindowPlayground;
 

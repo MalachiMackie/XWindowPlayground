@@ -1,6 +1,5 @@
 workspace "XWindowPlayground"
     location "Generated"
-    language "C++"
     architecture "x86_64"
     configurations { "Debug", "Release" }
 
@@ -15,13 +14,28 @@ workspace "XWindowPlayground"
     targetdir ("Build/bin/%{prj.name}/%{cfg.longname}")
     objdir ("Build/obj/%{prj.name}/%{cfg.longname}")
 
-    project "App"
-        kind "WindowedApp"
+    project "XWindowLib"
+        language "C++"
+        kind "StaticLib"
         files {
-            "Projects/App/**.h",
-            "Projects/App/**.cpp"
+            "Projects/%{prj.name}/src/**.h",
+            "Projects/%{prj.name}/src/**.cpp"
         }
-        
+
         links {"X11"}
 
+    project "App"
+        language "C++"
+        kind "WindowedApp"
+        files {
+            "Projects/%{prj.name}/src/**.h",
+            "Projects/%{prj.name}/src/**.cpp"
+        }
 
+        includedirs {
+            "Projects/XWindowLib/src"
+        }
+
+        links {"XWindowLib"}
+        links {"X11"}
+        
