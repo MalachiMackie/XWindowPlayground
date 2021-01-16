@@ -5,6 +5,7 @@
 #include <X11/Xutil.h>
 #include <unistd.h>
 #include <vector>
+#include <memory>
 #include "Shapes/Shape.h"
 #include "Drawable.h"
 
@@ -13,8 +14,8 @@ namespace XWindowPlayground
     class Manager
     {
     private:
-        Display* m_display;
-        Window* m_window;
+        std::shared_ptr<Display> m_display;
+        std::shared_ptr<Window> m_window;
 
         int m_colorWhite, m_colorBlack;
         int m_width, m_height;
@@ -23,7 +24,7 @@ namespace XWindowPlayground
 
         Atom m_wmDeleteMessage;
 
-        std::vector<Drawable*> m_drawables;
+        std::vector<std::unique_ptr<Drawable>> m_drawables;
 
     private:
         void Draw();
@@ -36,7 +37,7 @@ namespace XWindowPlayground
         int EventLoop();
         void Initialize();
 
-        void AddDrawable(Drawable* drawable);
+        void AddDrawable(std::unique_ptr<Drawable>&& drawable);
 
         ~Manager();
     };

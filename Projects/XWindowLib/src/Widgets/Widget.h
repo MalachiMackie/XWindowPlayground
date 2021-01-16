@@ -3,6 +3,7 @@
 
 #include <X11/Xlib.h>
 #include <vector>
+#include <memory>
 #include "../Shapes/Shape.h"
 #include "../Drawable.h"
 
@@ -11,15 +12,15 @@ namespace XWindowPlayground
     class Widget : public Drawable
     {
     protected:
-        std::vector<Shape*> m_shapes;
+        std::vector<std::unique_ptr<Shape>> m_shapes;
 
     public:
-        virtual ~Widget();
+        virtual ~Widget() {};
 
-        const std::vector<Shape*>& GetShapes() const { return m_shapes; }
+        const std::vector<std::unique_ptr<Shape>>& GetShapes() const { return m_shapes; }
 
         virtual void Draw() override;
-        virtual void Init(Display* display, Window* window) override;
+        virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window) override;
     };
 }
 

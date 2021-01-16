@@ -16,8 +16,8 @@ namespace XWindowPlayground
         int m_width, m_height;
         int m_shadowDistance;
 
-        Shape* m_main;
-        Shape* m_shadow;
+        int m_mainIndex;
+        int m_shadowIndex;
 
         Color m_color;
         Color m_hoverColor{0, 65000, 0};

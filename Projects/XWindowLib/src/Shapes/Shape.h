@@ -23,7 +23,7 @@ namespace XWindowPlayground {
     public:
         virtual ~Shape() {};
 
-        virtual void Init(Display* display, Window* window) override;
+        virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window) override;
 
         void SetColor(Color color);
         void Fill() { m_fill = true; }

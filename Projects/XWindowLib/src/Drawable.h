@@ -2,20 +2,21 @@
 #define DRAWABLE_H
 
 #include <X11/Xlib.h>
+#include <memory>
 
 namespace XWindowPlayground
 {
     class Drawable
     {
     protected:
-        Display* m_display;
-        Window* m_window;
+        std::shared_ptr<Display> m_display;
+        std::shared_ptr<Window> m_window;
 
         bool m_isInitialized = false;
 
     public:
         virtual void Draw() = 0;
-        virtual void Init(Display* display, Window* window);
+        virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window);
     };
 }
 

@@ -21,6 +21,7 @@ workspace "XWindowPlayground"
             "Projects/%{prj.name}/src/**.h",
             "Projects/%{prj.name}/src/**.cpp"
         }
+        defines { "XLIB_ILLEGAL_ACCESS" }
 
         links {"X11"}
 

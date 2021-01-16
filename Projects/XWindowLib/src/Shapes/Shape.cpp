@@ -3,12 +3,12 @@
 
 namespace XWindowPlayground
 {
-    void Shape::Init(Display* display, Window* window)
+    void Shape::Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window)
     {
         if (!m_isInitialized)
         {
             Drawable::Init(display, window);
-            m_graphicsContext = XCreateGC(display, *window, 0, 0);
+            m_graphicsContext = XCreateGC(display.get(), *window, 0, 0);
 
             if (m_initColorOnInit)
             {
@@ -19,9 +19,9 @@ namespace XWindowPlayground
 
     void Shape::InitColor()
     {
-        ColorManager* colorManager = ColorManager::GetColorManager(m_display);
+        std::shared_ptr<ColorManager> colorManager = ColorManager::GetColorManager(m_display);
         XColor xColor = colorManager->GetXColor(m_color);
-        XSetForeground(m_display, m_graphicsContext, xColor.pixel);
+        XSetForeground(m_display.get(), m_graphicsContext, xColor.pixel);
         Draw();
     }
 

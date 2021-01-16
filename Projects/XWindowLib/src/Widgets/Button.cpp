@@ -1,5 +1,6 @@
 #include <X11/Xlib.h>
 #include <iostream>
+#include <memory>
 
 #include "Button.h"
 #include "../Shapes/Shape.h"
@@ -10,23 +11,25 @@ namespace XWindowPlayground
     Button::Button(int x, int y, int width, int height, int shadowDistance)
         : m_x{x}, m_y{y}, m_width{width}, m_height{height}, m_shadowDistance{shadowDistance}
     {
-        m_main = new Square{m_x, m_y, m_width, m_height};
-        m_main->Fill();
+        auto main = std::make_unique<Square>(m_x, m_y, m_width, m_height);
+        main->Fill();
         
         if (m_shadowDistance > 0)
         {
-            m_shadow = new Square{m_x - m_shadowDistance, m_y - m_shadowDistance, m_width, m_height};
-            m_shadow->Fill();
-            m_shapes.push_back(m_shadow);
+            auto shadow = std::make_unique<Square>(m_x - m_shadowDistance, m_y - m_shadowDistance, m_width, m_height);
+            shadow->Fill();
+            m_shadowIndex = m_shapes.size();
+            m_shapes.push_back(std::move(shadow));
         }
         
-        m_shapes.push_back(m_main);
+        m_mainIndex = m_shapes.size();
+        m_shapes.push_back(std::move(main));
     }
 
     void Button::ApplyColor(Color color)
     {
         m_currentColor = color;
-        m_main->SetColor(m_currentColor);
+        m_shapes[m_mainIndex]->SetColor(m_currentColor);
     }
 
     void Button::SetColor(Color color)

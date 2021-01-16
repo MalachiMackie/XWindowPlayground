@@ -1,5 +1,6 @@
 #include <iostream>
 #include <functional>
+#include <memory>
 
 #include <XWindowLib.h>
 
@@ -9,24 +10,23 @@ int main() {
     Manager* manager = new Manager{1280, 720};
     manager->Initialize();
 
-    Button* button = new Button{50, 50, 100, 100, 5};
+    auto button = std::make_unique<Button>(50, 50, 100, 100, 5);
     button->SetColor(65000, 0, 0);
     button->SetOnLeftClick([](){
         std::cout << "Button One" << std::endl;
     });
-    manager->AddDrawable(button);
+    manager->AddDrawable(std::move(button));
 
-    Button* secondButton = new Button{160, 50, 100, 35, 3};
+    auto secondButton = std::make_unique<Button>(160, 50, 100, 35, 3);
     secondButton->SetColor(65000, 0, 0);
     secondButton->SetOnRightClick([](){
         std::cout << "Button Two" << std::endl;
     });
-    manager->AddDrawable(secondButton);
+    manager->AddDrawable(std::move(secondButton));
 
-
-    // XWindowPlayground::Shape* circle = new XWindowPlayground::Circle{0, 0, 100, 100};
-    // circle->Fill();
-    // manager->AddDrawable(circle);
+    auto thirdButton = std::make_unique<Button>(270, 50, 100, 35, 0);
+    thirdButton->SetColor(65000, 0, 0);
+    manager->AddDrawable(std::move(thirdButton));
 
     int returnCode = 0;
     while (returnCode == 0)

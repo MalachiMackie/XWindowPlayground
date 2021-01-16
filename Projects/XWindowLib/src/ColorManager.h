@@ -3,6 +3,7 @@
 
 #include <map>
 #include <X11/Xlib.h>
+#include <memory>
 #include "Color.h"
 
 
@@ -13,17 +14,16 @@ namespace XWindowPlayground
     private:
         std::map<Color, XColor> m_colorDictionary;
         Colormap m_colormap;
-        Display* m_display;
+        std::shared_ptr<Display> m_display;
 
-        static ColorManager* s_colorManager;
+        static std::shared_ptr<ColorManager> s_colorManager;
 
     public:
-        ColorManager(Display* display);
-        ~ColorManager();
+        ColorManager(std::shared_ptr<Display> display);
 
         XColor GetXColor(const Color& color);
 
-        static ColorManager* GetColorManager(Display* display);
+        static std::shared_ptr<ColorManager> GetColorManager(std::shared_ptr<Display> display);
     };
 }
 

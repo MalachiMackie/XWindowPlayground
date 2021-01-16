@@ -4,7 +4,6 @@
 #include "Manager.h"
 #include "Clickable.h"
 #include "Color.h"
-#include "ColorManager.h"
 #include "Drawable.h"
 #include "Hoverable.h"
 #include "Shapes/Shape.h"

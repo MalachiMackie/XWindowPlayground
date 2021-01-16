@@ -2,21 +2,21 @@
 
 namespace XWindowPlayground
 {
-    ColorManager* ColorManager::s_colorManager;
+    std::shared_ptr<ColorManager> ColorManager::s_colorManager;
 
-    ColorManager* ColorManager::GetColorManager(Display* display)
+    std::shared_ptr<ColorManager> ColorManager::GetColorManager(std::shared_ptr<Display> display)
     {
         if (!ColorManager::s_colorManager)
         {
-            ColorManager::s_colorManager = new ColorManager(display);
+            ColorManager::s_colorManager = std::make_shared<ColorManager>(display);
         }
         return ColorManager::s_colorManager;
     }
 
-    ColorManager::ColorManager(Display* display)
+    ColorManager::ColorManager(std::shared_ptr<Display> display)
     {
         m_display = display;
-        m_colormap = XDefaultColormap(m_display, 0);
+        m_colormap = XDefaultColormap(m_display.get(), 0);
     }
 
     XColor ColorManager::GetXColor(const Color& color)
@@ -26,7 +26,7 @@ namespace XWindowPlayground
         if (xcolorIterator == m_colorDictionary.end())
         {
             xcolor = color.ToXColor();
-            XAllocColor(m_display, m_colormap, &xcolor);
+            XAllocColor(m_display.get(), m_colormap, &xcolor);
             m_colorDictionary[color] = xcolor;
         }
         else
