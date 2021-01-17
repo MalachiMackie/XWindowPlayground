@@ -47,6 +47,7 @@ namespace XWindowPlayground
 
     int Manager::EventLoop()
     {
+        Draw(); // TODO: only do this when XClearArea is called
         XEvent e;
         XNextEvent(m_display.get(), &e);
         if (e.type == MapNotify || e.type == ConfigureNotify)

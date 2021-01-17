@@ -21,9 +21,11 @@ namespace XWindowPlayground
             m_x{x},
             m_y{y}
         {};
+        Square(){};
         virtual ~Square() override {};
 
         virtual void Draw() override;
+        void Set(int x, int y, int width, int height);
     };
 }
 

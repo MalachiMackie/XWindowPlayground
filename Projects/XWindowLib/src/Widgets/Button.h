@@ -11,28 +11,53 @@ namespace XWindowPlayground
 {
     class Button : public Widget, public Clickable
     {
+    public:
+        struct Style
+        {
+            Color color;
+            Color shadowColor;
+            std::pair<int, int> position;
+            std::pair<int, int> dimensions;
+            int shadowDepth;
+        public:
+            Style(){};
+            Style(Color color, Color shadowColor, std::pair<int, int> position, std::pair<int, int> dimensions, int shadowDepth)
+            {
+                Style::color = color;
+                Style::shadowColor = shadowColor;
+                Style::position = position;
+                Style::dimensions = dimensions;
+                Style::shadowDepth = shadowDepth;
+            }
+        };
+
     private:
-        int m_x, m_y;
-        int m_width, m_height;
-        int m_shadowDistance;
+        Style m_style;
+        Style m_hoverStyle;
+        Style m_currentStyle;
+        
+        bool m_hasHoverStyle = false;
 
         int m_mainIndex;
         int m_shadowIndex;
 
-        Color m_color;
-        Color m_hoverColor{0, 65000, 0};
         Color m_currentColor;
 
         std::function<void(void)> m_onClick;
         std::function<void(void)> m_onLeftClick;
         std::function<void(void)> m_onRightClick;
         std::function<void(void)> m_onMiddleClick;
+
+        static const Color s_defaultColor;
+        static const Color s_defaultShadowColor;
         
     private:
         void ApplyColor(Color color);
+        void ApplyStyle(const Style& style);
 
     public:
         Button(int x, int y, int width, int height, int shadowDistance = 2);
+        Button(Style style);
 
         virtual void OnHover() override;
         virtual void OnStopHover() override;
@@ -50,6 +75,9 @@ namespace XWindowPlayground
     
         void SetColor(Color color);
         void SetColor(int r, int g, int b);
+
+        void SetStyle(Button::Style style);
+        void SetHoverStyle(Button::Style style);
     };
 }
 

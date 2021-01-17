@@ -10,8 +10,18 @@ int main() {
     Manager* manager = new Manager{1280, 720};
     manager->Initialize();
 
-    auto button = std::make_unique<Button>(50, 50, 100, 100, 5);
-    button->SetColor(65000, 0, 0);
+    Button::Style button1Style;
+    button1Style.dimensions = {100, 100};
+    button1Style.position = {50, 50};
+    button1Style.color = {65000, 0, 0};
+    button1Style.shadowDepth = 2;
+
+    Button::Style button1HoverStyle{button1Style};
+    button1HoverStyle.color = {0, 65000, 0};
+    button1HoverStyle.shadowDepth = 0;
+
+    auto button = std::make_unique<Button>(button1Style);
+    button->SetHoverStyle(button1HoverStyle);
     button->SetOnLeftClick([](){
         std::cout << "Button One" << std::endl;
     });

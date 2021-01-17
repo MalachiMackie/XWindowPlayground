@@ -12,4 +12,17 @@ namespace XWindowPlayground
                 XDrawRectangle(m_display.get(), *m_window, m_graphicsContext, m_x, m_y, m_width, m_height);
         }
     }
+
+    void Square::Set(int x, int y, int width, int height)
+    {
+        if (m_display
+            && (m_x != x || m_y != y || m_width != width || m_height != height))
+        {
+            XClearArea(m_display.get(), *m_window, m_x, m_y, m_width, m_height, false);
+        }
+        m_x = x;
+        m_y = y;
+        m_width = width;
+        m_height = height;
+    }
 }

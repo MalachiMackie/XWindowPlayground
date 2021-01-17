@@ -8,22 +8,30 @@
 
 namespace XWindowPlayground
 {
-    Button::Button(int x, int y, int width, int height, int shadowDistance)
-        : m_x{x}, m_y{y}, m_width{width}, m_height{height}, m_shadowDistance{shadowDistance}
+    const Color Button::s_defaultColor = {65000, 0, 0};
+    const Color Button::s_defaultShadowColor = {0, 0, 0};
+
+    Button::Button(Style style)
+        : m_style{style}
     {
-        auto main = std::make_unique<Square>(m_x, m_y, m_width, m_height);
+        auto main = std::make_unique<Square>();
         main->Fill();
-        
-        if (m_shadowDistance > 0)
-        {
-            auto shadow = std::make_unique<Square>(m_x - m_shadowDistance, m_y - m_shadowDistance, m_width, m_height);
-            shadow->Fill();
-            m_shadowIndex = m_shapes.size();
-            m_shapes.push_back(std::move(shadow));
-        }
+
+        auto shadow = std::make_unique<Square>(0, 0, 0, 0);
+        shadow->Fill();
+        m_shadowIndex = m_shapes.size();
+        m_shapes.push_back(std::move(shadow));
         
         m_mainIndex = m_shapes.size();
         m_shapes.push_back(std::move(main));
+
+        ApplyStyle(m_style);
+    }
+
+    Button::Button(int x, int y, int width, int height, int shadowDistance)
+        : Button{Style{Button::s_defaultColor, Button::s_defaultShadowColor, {x, y}, {width, height}, shadowDistance}}
+    {
+        
     }
 
     void Button::ApplyColor(Color color)
@@ -34,8 +42,8 @@ namespace XWindowPlayground
 
     void Button::SetColor(Color color)
     {
-        m_color = color;
-        ApplyColor(m_color);
+        m_style.color = color;
+        ApplyColor(m_style.color);
     }
 
     void Button::SetColor(int r, int g, int b)
@@ -45,20 +53,22 @@ namespace XWindowPlayground
 
     void Button::OnHover()
     {
-        ApplyColor(m_hoverColor);
+        if (m_hasHoverStyle)
+            ApplyStyle(m_hoverStyle);
     }
 
     void Button::OnStopHover()
     {
-        ApplyColor(m_color);
+        if (m_hasHoverStyle)
+            ApplyStyle(m_style);
     }
 
     bool Button::IsHovering(int mouseX, int mouseY)
     {
-        return mouseX >= m_x
-            && mouseX <= m_x + m_width
-            && mouseY >= m_y
-            && mouseY <= m_y + m_height;
+        return mouseX >= m_style.position.first
+            && mouseX <= m_style.position.first + m_style.dimensions.first
+            && mouseY >= m_style.position.second
+            && mouseY <= m_style.position.second + m_style.dimensions.second;
     }
 
     void Button::OnClick()
@@ -91,5 +101,34 @@ namespace XWindowPlayground
         {
             m_onRightClick();
         }
+    }
+
+    void Button::ApplyStyle(const Style& style)
+    {
+        m_currentStyle = style;
+
+        Square* main = dynamic_cast<Square*>(m_shapes[m_mainIndex].get());
+        main->Set(m_currentStyle.position.first, m_currentStyle.position.second, m_currentStyle.dimensions.first, m_currentStyle.dimensions.second);
+        main->SetColor(m_currentStyle.color);
+
+        Square* shadow = dynamic_cast<Square*>(m_shapes[m_shadowIndex].get());
+        if (m_currentStyle.shadowDepth <= 0)
+            shadow->Set(0, 0, 0, 0);
+        else
+            shadow->Set(m_currentStyle.position.first - m_currentStyle.shadowDepth, m_currentStyle.position.second - m_currentStyle.shadowDepth, m_currentStyle.dimensions.first, m_currentStyle.dimensions.second);
+        shadow->SetColor(m_currentStyle.shadowColor);
+        Draw();
+    }
+
+    void Button::SetStyle(Style style)
+    {
+        m_style = style;
+        ApplyStyle(m_style);
+    }
+
+    void Button::SetHoverStyle(Style style)
+    {
+        m_hoverStyle = style;
+        m_hasHoverStyle = true;
     }
 }
