@@ -1,7 +1,7 @@
 #ifndef I_HAVE_COLOR_H
 #define I_HAVE_COLOR_H
 
-#include "Color.h"
+#include "Core/Color.h"
 
 namespace XWindowLib
 {

@@ -2,8 +2,8 @@
 #define SQUARE_H
 
 #include <X11/Xlib.h>
-#include "Shape.h"
-#include "Pairs.h"
+#include "Shapes/Shape.h"
+#include "Utils/Pairs.h"
 
 namespace XWindowLib
 {

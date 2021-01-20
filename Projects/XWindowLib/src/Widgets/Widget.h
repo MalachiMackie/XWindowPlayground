@@ -4,7 +4,7 @@
 #include <X11/Xlib.h>
 #include <vector>
 #include <memory>
-#include "Drawable.h"
+#include "Types/Drawable.h"
 
 namespace XWindowLib
 {

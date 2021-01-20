@@ -4,7 +4,7 @@
 #include <map>
 #include <X11/Xlib.h>
 #include <memory>
-#include "Color.h"
+#include "Core/Color.h"
 
 
 namespace XWindowLib

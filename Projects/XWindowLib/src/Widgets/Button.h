@@ -4,9 +4,9 @@
 #include <functional>
 
 #include "Widgets/Widget.h"
-#include "Pairs.h"
-#include "Clickable.h"
-#include "Color.h"
+#include "Utils/Pairs.h"
+#include "Types/Clickable.h"
+#include "Core/Color.h"
 
 namespace XWindowLib
 {

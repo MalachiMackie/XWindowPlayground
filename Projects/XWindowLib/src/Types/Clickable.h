@@ -1,7 +1,7 @@
 #ifndef CLICKABLE_H
 #define CLICKABLE_H
 
-#include "Hoverable.h"
+#include "Types/Hoverable.h"
 
 namespace XWindowLib
 {

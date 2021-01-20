@@ -1,11 +1,11 @@
 #ifndef X_WINDOW_LIB_H
 #define X_WINDOW_LIB_H
 
-#include "Manager.h"
-#include "Clickable.h"
-#include "Color.h"
-#include "Drawable.h"
-#include "Hoverable.h"
+#include "Core/Manager.h"
+#include "Core/Color.h"
+#include "Types/Clickable.h"
+#include "Types/Drawable.h"
+#include "Types/Hoverable.h"
 #include "Shapes/Shape.h"
 #include "Shapes/Circle.h"
 #include "Shapes/Square.h"

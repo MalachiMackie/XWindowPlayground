@@ -1,6 +1,6 @@
 #include "Shape.h"
 
-#include "ColorManager.h"
+#include "Core/ColorManager.h"
 
 namespace XWindowLib
 {

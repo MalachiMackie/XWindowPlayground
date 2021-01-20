@@ -2,9 +2,9 @@
 #define SHAPE_H
 
 #include <X11/Xlib.h>
-#include "Drawable.h"
-#include "IHaveColor.h"
-#include "Color.h"
+#include "Types/Drawable.h"
+#include "Types/IHaveColor.h"
+#include "Core/Color.h"
 
 namespace XWindowLib {
     class Shape : public Drawable, public IHaveColor

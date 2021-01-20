@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 #include "Shapes/Shape.h"
-#include "Drawable.h"
+#include "Types/Drawable.h"
 
 namespace XWindowLib
 {
