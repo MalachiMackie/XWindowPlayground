@@ -2,7 +2,7 @@
 #define CIRCLE_H
 
 #include <X11/Xlib.h>
-#include "Shapes/Shape.h"
+#include "Types/Shapes/Shape.h"
 
 namespace XWindowLib
 {

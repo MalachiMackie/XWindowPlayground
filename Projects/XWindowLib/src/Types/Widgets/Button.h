@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include "Widgets/Widget.h"
+#include "Types/Widgets/Widget.h"
 #include "Utils/Pairs.h"
 #include "Types/Clickable.h"
 #include "Core/Color.h"

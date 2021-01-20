@@ -1,7 +1,7 @@
 #ifndef LINE_H
 #define LINE_H
 
-#include "Shapes/Shape.h"
+#include "Types/Shapes/Shape.h"
 #include "Utils/Pairs.h"
 
 namespace XWindowLib

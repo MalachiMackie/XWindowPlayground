@@ -6,10 +6,10 @@
 #include "Types/Clickable.h"
 #include "Types/Drawable.h"
 #include "Types/Hoverable.h"
-#include "Shapes/Shape.h"
-#include "Shapes/Circle.h"
-#include "Shapes/Square.h"
-#include "Widgets/Widget.h"
-#include "Widgets/Button.h"
+#include "Types/Shapes/Shape.h"
+#include "Types/Shapes/Circle.h"
+#include "Types/Shapes/Square.h"
+#include "Types/Widgets/Widget.h"
+#include "Types/Widgets/Button.h"
 
 #endif

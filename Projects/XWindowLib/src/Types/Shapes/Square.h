@@ -2,7 +2,7 @@
 #define SQUARE_H
 
 #include <X11/Xlib.h>
-#include "Shapes/Shape.h"
+#include "Types/Shapes/Shape.h"
 #include "Utils/Pairs.h"
 
 namespace XWindowLib

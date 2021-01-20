@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <vector>
 #include <memory>
-#include "Shapes/Shape.h"
+#include "Types/Shapes/Shape.h"
 #include "Types/Drawable.h"
 
 namespace XWindowLib

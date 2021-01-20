@@ -4,10 +4,10 @@
 #include <iostream>
 #include <memory>
 
-#include "Shapes/Shape.h"
-#include "Shapes/Square.h"
-#include "Shapes/Line.h"
-#include "Shapes/Arc.h"
+#include "Types/Shapes/Shape.h"
+#include "Types/Shapes/Square.h"
+#include "Types/Shapes/Line.h"
+#include "Types/Shapes/Arc.h"
 
 namespace XWindowLib
 {

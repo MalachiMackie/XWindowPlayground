@@ -1,7 +1,7 @@
 #ifndef ARC_H
 #define ARC_H
 
-#include "Shapes/Shape.h"
+#include "Types/Shapes/Shape.h"
 
 namespace XWindowLib
 {
