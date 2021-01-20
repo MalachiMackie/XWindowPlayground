@@ -4,7 +4,7 @@
 #include <X11/Xlib.h>
 #include <map>
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     struct Color
     {
@@ -57,7 +57,7 @@ namespace XWindowPlayground
 
 namespace std
 {
-    using namespace XWindowPlayground;
+    using namespace XWindowLib;
 
     template<> struct less<Color>
     {

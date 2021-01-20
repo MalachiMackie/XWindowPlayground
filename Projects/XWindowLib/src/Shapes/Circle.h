@@ -2,9 +2,9 @@
 #define CIRCLE_H
 
 #include <X11/Xlib.h>
-#include "Shape.h"
+#include "Shapes/Shape.h"
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     class Circle : public Shape
     {

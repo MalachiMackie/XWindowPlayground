@@ -1,28 +1,31 @@
-#include <X11/Xlib.h>
 #include "Square.h"
 
-namespace XWindowPlayground
+#include <X11/Xlib.h>
+
+namespace XWindowLib
 {
     void Square::Draw()
     {
         if (m_display && m_window) {
             if (m_fill)
-                XFillRectangle(m_display.get(), *m_window, m_graphicsContext, m_x, m_y, m_width, m_height);
+                XFillRectangle(m_display.get(), *m_window, m_graphicsContext, m_position.x, m_position.y, m_dimensions.width, m_dimensions.height);
             else
-                XDrawRectangle(m_display.get(), *m_window, m_graphicsContext, m_x, m_y, m_width, m_height);
+                XDrawRectangle(m_display.get(), *m_window, m_graphicsContext, m_position.x, m_position.y, m_dimensions.width, m_dimensions.height);
         }
+    }
+
+    void Square::Set(Position position, Dimensions dimensions)
+    {
+        if (m_display && (m_position != position || m_dimensions != dimensions))
+        {
+            XClearArea(m_display.get(), *m_window, m_position.x, m_position.y, m_dimensions.width, m_dimensions.height, false);
+        }
+        m_position = position;
+        m_dimensions = dimensions;
     }
 
     void Square::Set(int x, int y, int width, int height)
     {
-        if (m_display
-            && (m_x != x || m_y != y || m_width != width || m_height != height))
-        {
-            XClearArea(m_display.get(), *m_window, m_x, m_y, m_width, m_height, false);
-        }
-        m_x = x;
-        m_y = y;
-        m_width = width;
-        m_height = height;
+        Set({x, y}, {width, height});
     }
 }

@@ -7,7 +7,7 @@
 #include "Color.h"
 
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     class ColorManager
     {

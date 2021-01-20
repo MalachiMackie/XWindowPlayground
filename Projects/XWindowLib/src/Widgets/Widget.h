@@ -4,20 +4,22 @@
 #include <X11/Xlib.h>
 #include <vector>
 #include <memory>
-#include "../Shapes/Shape.h"
-#include "../Drawable.h"
+#include "Drawable.h"
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     class Widget : public Drawable
     {
     protected:
-        std::vector<std::unique_ptr<Shape>> m_shapes;
+        std::vector<std::unique_ptr<Drawable>> m_drawables;
+
+    protected:
+        void AddDrawable(std::unique_ptr<Drawable>&& drawable, int* index);
 
     public:
         virtual ~Widget() {};
 
-        const std::vector<std::unique_ptr<Shape>>& GetShapes() const { return m_shapes; }
+        const std::vector<std::unique_ptr<Drawable>>& GetDrawables() const { return m_drawables; }
 
         virtual void Draw() override;
         virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window) override;

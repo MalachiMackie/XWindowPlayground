@@ -1,6 +1,6 @@
 #include "Drawable.h"
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     void Drawable::Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window)
     {

@@ -1,7 +1,8 @@
-#include <X11/Xlib.h>
 #include "Circle.h"
 
-namespace XWindowPlayground
+#include <X11/Xlib.h>
+
+namespace XWindowLib
 {
     void Circle::Draw()
     {

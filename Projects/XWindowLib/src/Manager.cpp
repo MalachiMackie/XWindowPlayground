@@ -6,7 +6,7 @@
 
 #define NIL (0)
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     void Manager::Initialize()
     {
@@ -21,7 +21,7 @@ namespace XWindowPlayground
 
         // tell XWindows server which events we want.
         // Structure events include window structural changes as well as mapping changes
-        XSelectInput(m_display.get(), *m_window, StructureNotifyMask | PointerMotionMask | ButtonPressMask);
+        XSelectInput(m_display.get(), *m_window, StructureNotifyMask | PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
         m_wmDeleteMessage = XInternAtom(m_display.get(), "WM_DELETE_WINDOW", NIL);
         XSetWMProtocols(m_display.get(), *m_window, &m_wmDeleteMessage, 1);
 
@@ -77,6 +77,17 @@ namespace XWindowPlayground
                 if (clickable)
                 {
                     clickable->DoClick(e.xbutton.button);
+                }
+            }
+        }
+        else if (e.type == ButtonRelease)
+        {
+            for(auto&& drawable : m_drawables)
+            {
+                Clickable* clickable = dynamic_cast<Clickable*>(drawable.get());
+                if (clickable)
+                {
+                    clickable->DoClickRelease(e.xbutton.button);
                 }
             }
         }

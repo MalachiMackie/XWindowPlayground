@@ -2,18 +2,18 @@
 #define SHAPE_H
 
 #include <X11/Xlib.h>
-#include "../Drawable.h"
-#include "../Color.h"
+#include "Drawable.h"
+#include "IHaveColor.h"
+#include "Color.h"
 
-namespace XWindowPlayground {
-    class Shape : public Drawable
+namespace XWindowLib {
+    class Shape : public Drawable, public IHaveColor
     {
     private:
         bool m_initColorOnInit = false;
 
     protected:
         GC m_graphicsContext;
-        Color m_color;
 
         bool m_fill;
 
@@ -25,7 +25,7 @@ namespace XWindowPlayground {
 
         virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window) override;
 
-        void SetColor(Color color);
+        virtual void SetColor(Color color) override;
         void Fill() { m_fill = true; }
 
         const GC& GetGC() const { return m_graphicsContext; }

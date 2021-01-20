@@ -1,7 +1,8 @@
 #include "Shape.h"
-#include "../ColorManager.h"
 
-namespace XWindowPlayground
+#include "ColorManager.h"
+
+namespace XWindowLib
 {
     void Shape::Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window)
     {

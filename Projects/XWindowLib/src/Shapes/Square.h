@@ -3,29 +3,29 @@
 
 #include <X11/Xlib.h>
 #include "Shape.h"
+#include "Pairs.h"
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     class Square : public Shape
     {
     private:
-        int m_width;
-        int m_height;
-        int m_x;
-        int m_y;
+        Dimensions m_dimensions;
+        Position m_position;
 
     public:
         Square(int x, int y, int width, int height)
-            : m_width{width},
-            m_height{height},
-            m_x{x},
-            m_y{y}
+            : Square(Position{x, y}, Dimensions{width, height})
         {};
+        Square(Position position, Dimensions dimensions)
+            : m_position{position}, m_dimensions{dimensions}
+            {};
         Square(){};
         virtual ~Square() override {};
 
         virtual void Draw() override;
         void Set(int x, int y, int width, int height);
+        void Set(Position pos, Dimensions dimensions);
     };
 }
 

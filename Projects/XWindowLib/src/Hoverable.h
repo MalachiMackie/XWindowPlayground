@@ -1,7 +1,7 @@
 #ifndef HOVERABLE_H
 #define HOVERABLE_H
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     class Hoverable
     {

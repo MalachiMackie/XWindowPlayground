@@ -1,13 +1,19 @@
 #include "Widget.h"
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     void Widget::Draw()
     {
-        for (auto &&shape : m_shapes)
+        for (auto &&drawable : m_drawables)
         {
-            shape->Draw();
+            drawable->Draw();
         }
+    }
+
+    void Widget::AddDrawable(std::unique_ptr<Drawable>&& drawable, int* index)
+    {
+        *index = m_drawables.size();
+        m_drawables.push_back(std::move(drawable));
     }
 
     void Widget::Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window)
@@ -15,9 +21,8 @@ namespace XWindowPlayground
         if (!m_isInitialized)
         {
             Drawable::Init(display, window);
-            for(auto &&shape : m_shapes)
+            for(auto &&drawable : m_drawables)
             {
-                Drawable* drawable = dynamic_cast<Drawable*>(shape.get());
                 drawable->Init(display, window);
             }
         }

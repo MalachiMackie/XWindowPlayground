@@ -9,7 +9,7 @@
 #include "Shapes/Shape.h"
 #include "Drawable.h"
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     class Manager
     {

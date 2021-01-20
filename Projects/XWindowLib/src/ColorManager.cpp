@@ -1,6 +1,6 @@
 #include "ColorManager.h"
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     std::shared_ptr<ColorManager> ColorManager::s_colorManager;
 

@@ -23,6 +23,8 @@ workspace "XWindowPlayground"
         }
         defines { "XLIB_ILLEGAL_ACCESS" }
 
+        includedirs { "Projects/XWindowLib/src" }
+
         links {"X11"}
 
     project "App"

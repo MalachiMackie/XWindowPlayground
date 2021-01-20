@@ -1,6 +1,6 @@
 #include "Hoverable.h"
 
-namespace XWindowPlayground
+namespace XWindowLib
 {
     void Hoverable::CheckHovering(int mouseX, int mouseY)
     {
