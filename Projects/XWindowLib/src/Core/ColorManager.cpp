@@ -16,7 +16,7 @@ namespace XWindowLib
     ColorManager::ColorManager(std::shared_ptr<Display> display)
     {
         m_display = display;
-        m_colormap = XDefaultColormap(m_display.get(), 0);
+        m_colorMap = XDefaultColormap(m_display.get(), 0);
     }
 
     XColor ColorManager::GetXColor(const Color& color)
@@ -26,7 +26,7 @@ namespace XWindowLib
         if (xcolorIterator == m_colorDictionary.end())
         {
             xcolor = color.ToXColor();
-            XAllocColor(m_display.get(), m_colormap, &xcolor);
+            XAllocColor(m_display.get(), m_colorMap, &xcolor);
             m_colorDictionary[color] = xcolor;
         }
         else
@@ -36,5 +36,11 @@ namespace XWindowLib
         
 
         return xcolor;
+    }
+
+    ColorManager::~ColorManager()
+    {
+        XFreeColormap(m_display.get(), m_colorMap);
+        m_colorDictionary.clear();
     }
 }

@@ -13,13 +13,14 @@ namespace XWindowLib
     {
     private:
         std::map<Color, XColor> m_colorDictionary;
-        Colormap m_colormap;
+        Colormap m_colorMap;
         std::shared_ptr<Display> m_display;
 
         static std::shared_ptr<ColorManager> s_colorManager;
 
     public:
         ColorManager(std::shared_ptr<Display> display);
+        ~ColorManager();
 
         XColor GetXColor(const Color& color);
 

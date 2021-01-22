@@ -19,6 +19,7 @@ namespace XWindowLib
             Position position;
             Dimensions dimensions;
             int borderRadius = 0;
+            std::string text;
         public:
             Style(){};
             Style(Color color, std::pair<int, int> position, std::pair<int, int> dimensions)
@@ -48,8 +49,10 @@ namespace XWindowLib
         int m_bottomLeftCornerIndex;
         int m_bottomRightCornerIndex;
 
-        int m_fill1;
-        int m_fill2;
+        int m_fill1Index;
+        int m_fill2Index;
+
+        int m_textBoxIndex;
 
         Color m_currentColor;
 

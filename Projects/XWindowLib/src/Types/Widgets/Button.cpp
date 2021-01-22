@@ -8,6 +8,7 @@
 #include "Types/Shapes/Square.h"
 #include "Types/Shapes/Line.h"
 #include "Types/Shapes/Arc.h"
+#include "Types/Widgets/TextBox.h"
 
 namespace XWindowLib
 {
@@ -59,8 +60,14 @@ namespace XWindowLib
         AddDrawable(std::move(bottom), &m_bottomIndex);
         AddDrawable(std::move(right), &m_rightIndex);
         AddDrawable(std::move(left), &m_leftIndex);
-        AddDrawable(std::move(fill1), &m_fill1);
-        AddDrawable(std::move(fill2), &m_fill2);
+        AddDrawable(std::move(fill1), &m_fill1Index);
+        AddDrawable(std::move(fill2), &m_fill2Index);
+
+        if (m_style.text.length() > 0)
+        {
+            auto textBox = std::make_unique<TextBox>(m_style.position, m_style.dimensions, m_style.text);
+            AddDrawable(std::move(textBox), &m_textBoxIndex);
+        }
 
         ApplyStyle(m_style);
     }
