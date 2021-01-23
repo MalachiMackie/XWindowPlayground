@@ -15,18 +15,16 @@ namespace XWindowLib
 
     std::shared_ptr<XFontStruct> FontManager::GetFont(std::string name)
     {
-        auto fontIterator = m_fontMap.find(name);
-        std::shared_ptr<XFontStruct> fontStruct;
-        if (fontIterator == m_fontMap.end())
+        std::shared_ptr<XFontStruct> font = m_fontMap[name];
+        if (!font)
         {
-            fontStruct = std::shared_ptr<XFontStruct>(XLoadQueryFont(m_display.get(), name.c_str()));
-            m_fontMap[name] = fontStruct;
+            m_fontMap[name] = std::move(std::shared_ptr<XFontStruct>(XLoadQueryFont(m_display.get(), name.c_str())));
+            return m_fontMap[name];
         }
         else
         {
-            fontStruct = (*fontIterator).second;
+            return font;
         }
-        return fontStruct;
     }
 
     int FontManager::GetTextWidth(std::string font, std::string text)

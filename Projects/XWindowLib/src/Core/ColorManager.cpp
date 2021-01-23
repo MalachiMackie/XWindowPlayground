@@ -1,5 +1,7 @@
 #include "ColorManager.h"
 
+#include <iostream>
+
 namespace XWindowLib
 {
     std::shared_ptr<ColorManager> ColorManager::s_colorManager;
@@ -21,21 +23,17 @@ namespace XWindowLib
 
     XColor ColorManager::GetXColor(const Color& color)
     {
-        auto xcolorIterator = m_colorDictionary.find(color);
-        XColor xcolor;
-        if (xcolorIterator == m_colorDictionary.end())
+        if (m_colorDictionary.find(color) == m_colorDictionary.end())
         {
-            xcolor = color.ToXColor();
+            XColor xcolor = color.ToXColor();
             XAllocColor(m_display.get(), m_colorMap, &xcolor);
             m_colorDictionary[color] = xcolor;
+            return xcolor;
         }
         else
         {
-            xcolor = (*xcolorIterator).second;
+            return m_colorDictionary[color];
         }
-        
-
-        return xcolor;
     }
 
     ColorManager::~ColorManager()

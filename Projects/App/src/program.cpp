@@ -10,9 +10,8 @@ int main() {
     std::unique_ptr<Manager> manager = std::make_unique<Manager>(1280, 720);
     manager->Initialize();
 
-    // std::unique_ptr<TextBox> textBox = std::make_unique<TextBox>(Position{10, 10}, Dimensions{100, 100}, "Hello World", 1);
-    // manager->AddDrawable(std::move(textBox));
-    // TODO: figure out why having two text boxes breaks text drawing
+    std::unique_ptr<TextBox> textBox = std::make_unique<TextBox>(Position{10, 10}, Dimensions{100, 100}, "Hello World", 1);
+    manager->AddDrawable(std::move(textBox));
 
     Button::Style button1Style;
     button1Style.dimensions = {100, 100};
