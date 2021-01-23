@@ -9,7 +9,7 @@
 
 namespace XWindowLib
 {
-    class TextBox : public Widget, public ITextConatiner
+    class TextBox : public Widget, public ITextContainer
     {
     private:
         Position m_position;
@@ -21,7 +21,7 @@ namespace XWindowLib
         GC m_graphicsContext;
 
     public:
-        TextBox(Position position, Dimensions dimensions, std::string content, int borderWidth = 0);
+        TextBox(Position position, Dimensions dimensions, std::string content, TextAlignment textAlignment = TextAlignment::LEFT, int borderWidth = 0);
 
         virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window) override;
         virtual void Draw() override;

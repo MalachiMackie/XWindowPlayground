@@ -9,12 +9,20 @@
 
 namespace XWindowLib
 {
-    class ITextConatiner
+    enum class TextAlignment
+    {
+        LEFT,
+        RIGHT,
+        CENTER
+    };
+
+    class ITextContainer
     {
     protected:
         XTextItem m_textItem;
         std::shared_ptr<FontManager> m_fontManager;
         std::string m_fontName = "8x13bold";
+        TextAlignment m_textAlignment;
 
         void InitFontManager(std::shared_ptr<Display> display) {m_fontManager = FontManager::GetFontManager(display);}
 
