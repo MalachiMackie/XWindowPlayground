@@ -9,9 +9,15 @@ namespace XWindowLib
         if (m_display && m_window)
         {
             if (m_fill)
-                XFillArc(m_display.get(), *m_window, m_graphicsContext, m_x, m_y, m_width, m_height, 0, 360 * 64);
+                XFillArc(m_display.get(), *m_window, m_graphicsContext, m_position.x, m_position.y, m_dimensions.width, m_dimensions.height, 0, 360 * 64);
             else
-                XDrawArc(m_display.get(), *m_window, m_graphicsContext, m_x, m_y, m_width, m_height, 0, 360 * 64);
+                XDrawArc(m_display.get(), *m_window, m_graphicsContext, m_position.x, m_position.y, m_dimensions.width, m_dimensions.height, 0, 360 * 64);
         }
+    }
+
+    Circle::Circle(Position position, Dimensions dimensions)
+    {
+        SetPosition(position);
+        SetDimensions(dimensions);
     }
 }

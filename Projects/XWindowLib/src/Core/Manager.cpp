@@ -1,6 +1,9 @@
 #include "Manager.h"
 #include <exception>
 #include <iostream>
+#include <sstream>
+#include <random>
+#include <string>
 
 #include "Types/Widgets/Button.h"
 
@@ -40,13 +43,14 @@ namespace XWindowLib
     {
         for (auto &&drawable : m_drawables)
         {
-            drawable->Draw();
+            drawable.second->Draw();
         }
         XFlush(m_display.get());
     }
 
     int Manager::EventLoop()
     {
+        XClearWindow(m_display.get(), *m_window);
         Draw(); // TODO: only do this when XClearArea is called
         XEvent e;
         XNextEvent(m_display.get(), &e);
@@ -62,7 +66,7 @@ namespace XWindowLib
         {
             for (auto &&drawable : m_drawables)
             {
-                Hoverable* hoverable = dynamic_cast<Hoverable*>(drawable.get());
+                Hoverable* hoverable = dynamic_cast<Hoverable*>(drawable.second.get());
                 if (hoverable)
                 {
                     hoverable->CheckHovering(e.xmotion.x, e.xmotion.y);
@@ -73,7 +77,7 @@ namespace XWindowLib
         {
             for (auto &&drawable : m_drawables)
             {
-                Clickable* clickable = dynamic_cast<Clickable*>(drawable.get());
+                Clickable* clickable = dynamic_cast<Clickable*>(drawable.second.get());
                 if (clickable)
                 {
                     clickable->DoClick(e.xbutton.button);
@@ -84,7 +88,7 @@ namespace XWindowLib
         {
             for(auto&& drawable : m_drawables)
             {
-                Clickable* clickable = dynamic_cast<Clickable*>(drawable.get());
+                Clickable* clickable = dynamic_cast<Clickable*>(drawable.second.get());
                 if (clickable)
                 {
                     clickable->DoClickRelease(e.xbutton.button);
@@ -95,10 +99,49 @@ namespace XWindowLib
         return 0;
     }
 
+    unsigned int random_char() {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, 255);
+        return dis(gen);
+    }
+
+    std::string generate_hex(const unsigned int len) {
+        std::stringstream ss;
+        for (auto i = 0; i < len; i++) {
+            const auto rc = random_char();
+            std::stringstream hexstream;
+            hexstream << std::hex << rc;
+            auto hex = hexstream.str();
+            ss << (hex.length() < 2 ? '0' + hex : hex);
+        }
+        return ss.str();
+    }
+
     void Manager::AddDrawable(std::unique_ptr<Drawable>&& drawable)
     {
+        AddDrawable(std::move(drawable), generate_hex(10));
+    }
+
+    void Manager::AddDrawable(std::unique_ptr<Drawable>&& drawable, const std::string& name)
+    {
         drawable->Init(m_display, m_window);
-        m_drawables.push_back(std::move(drawable));
+        const auto& existing = m_drawables[name];
+        if (existing)
+        {
+            throw "drawable with that name already exists";
+        }
+        m_drawables[name] = std::move(drawable);
+    }
+
+    const std::unique_ptr<Drawable>& Manager::GetDrawable(const std::string& name)
+    {
+        const auto& existing = m_drawables[name];
+        if (!existing)
+        {
+            throw "drawable does not exist";
+        }
+        return existing;
     }
 
     Manager::~Manager() {}

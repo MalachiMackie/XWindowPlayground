@@ -27,6 +27,9 @@ namespace XWindowLib
         void InitFontManager(std::shared_ptr<Display> display) {m_fontManager = FontManager::GetFontManager(display);}
 
     public:
+
+        const TextAlignment& GetTextAlignment() { return m_textAlignment; }
+        void SetTextAlignment(TextAlignment textAlignment) { m_textAlignment = textAlignment; }
     };
 }
 

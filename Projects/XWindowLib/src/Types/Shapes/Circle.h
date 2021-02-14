@@ -8,20 +8,9 @@ namespace XWindowLib
 {
     class Circle : public Shape
     {
-    private:
-        int m_x;
-        int m_y;
-        int m_width;
-        int m_height;
-
     public:
 
-        Circle(int x, int y, int width, int height)
-            : m_x{x},
-            m_y{y},
-            m_width{width},
-            m_height{height}
-            {};
+        Circle(Position position, Dimensions dimensions);
         
         virtual ~Circle() override {};
 

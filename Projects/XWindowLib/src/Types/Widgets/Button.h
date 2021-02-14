@@ -7,6 +7,7 @@
 #include "Utils/Pairs.h"
 #include "Types/Clickable.h"
 #include "Core/Color.h"
+#include "Types/ITextContainer.h"
 
 namespace XWindowLib
 {
@@ -16,18 +17,7 @@ namespace XWindowLib
         struct Style
         {
             Color color;
-            Position position;
-            Dimensions dimensions;
             int borderRadius = 0;
-            std::string text;
-        public:
-            Style(){};
-            Style(Color color, std::pair<int, int> position, std::pair<int, int> dimensions)
-            {
-                Style::color = color;
-                Style::position = position;
-                Style::dimensions = dimensions;
-            }
         };
 
     private:
@@ -52,7 +42,7 @@ namespace XWindowLib
         int m_fill1Index;
         int m_fill2Index;
 
-        int m_textBoxIndex;
+        int m_contentIndex = -1;
 
         Color m_currentColor;
 
@@ -69,12 +59,16 @@ namespace XWindowLib
         static const Color s_defaultColor;
         
     private:
+        void CreateButton();
         void ApplyColor(Color color);
         void ApplyStyle(const Style& style);
+        void SetContentPosition();
 
     public:
-        Button(int x, int y, int width, int height);
-        Button(Style style);
+        Button(Position position, Dimensions dimensions);
+        Button(Style style, Position position, Dimensions dimensions);
+        Button(Style style, Position position, Dimensions dimensions, std::string content);
+        Button(Style style, Position position, Dimensions dimensions, std::unique_ptr<Drawable>&& drawable);
 
         virtual void OnHover() override;
         virtual void OnStopHover() override;
@@ -106,6 +100,14 @@ namespace XWindowLib
         void SetStyle(Button::Style style);
         void SetHoverStyle(Button::Style style);
         void SetClickStyle(Button::Style style);
+
+        const TextAlignment& GetTextAlignment();
+        const VerticalAlignment& GetTextVerticalAlignment();
+
+        void SetTextAlignment(TextAlignment textAlignment);
+        void SetTextVerticalAlignment(VerticalAlignment verticalAlignment);
+
+        virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window) override;
     };
 }
 

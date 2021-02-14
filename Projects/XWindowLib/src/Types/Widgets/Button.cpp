@@ -3,6 +3,7 @@
 #include <X11/Xlib.h>
 #include <iostream>
 #include <memory>
+#include <iostream>
 
 #include "Types/Shapes/Shape.h"
 #include "Types/Shapes/Square.h"
@@ -14,40 +15,145 @@ namespace XWindowLib
 {
     const Color Button::s_defaultColor = {65000, 0, 0};
 
-    Button::Button(Style style)
+    Button::Button(Position position, Dimensions dimensions)
+        : Button{Style{}, position, dimensions}
+        {}
+
+    Button::Button(Style style, Position position, Dimensions dimensions, std::unique_ptr<Drawable>&& drawable)
+        : Button{style, position, dimensions}
+    {
+        AddDrawable(std::move(drawable), &m_contentIndex);
+
+        ApplyStyle(m_style);
+    }
+
+    Button::Button(Style style, Position position, Dimensions dimensions)
         : m_style{style}
     {
+        SetPosition(position);
+        SetDimensions(dimensions);
+
+        CreateButton();
+
+        ApplyStyle(m_style);
+    }
+
+    Button::Button(Style style, Position position, Dimensions dimensions, std::string content)
+        : Button{style, position, dimensions}
+    {
+        if (content.length() > 0)
+        {
+            std::unique_ptr<TextBox> textBox = std::make_unique<TextBox>(
+                m_position, Dimensions{0,0}, content, TextAlignment::CENTER, VerticalAlignment::MIDDLE
+            );
+            AddDrawable(std::move(textBox), &m_contentIndex);
+        }
+
+        ApplyStyle(m_style);
+    }
+
+    void Button::SetContentPosition()
+    {
+        if (m_contentIndex < 0)
+            return;
+
+        const std::unique_ptr<Drawable>& drawable = m_drawables[m_contentIndex];
+        if (!drawable)
+            return;
+        
+        Dimensions dimensions = drawable->GetDimensions();
+        Position position = drawable->GetPosition();
+        switch (drawable->GetVerticalAlignment())
+        {
+        default:
+        case VerticalAlignment::TOP:
+            position.y = m_position.y;
+            break;
+        case VerticalAlignment::MIDDLE:
+            position.y = m_position.y + (m_dimensions.height - dimensions.height) / 2;
+            break;
+        case VerticalAlignment::BOTTOM:
+            position.y = m_position.y + m_dimensions.height - dimensions.height;
+            break;
+        }
+
+        ITextContainer* textContainer = dynamic_cast<ITextContainer*>(drawable.get());
+        if (textContainer)
+        {
+            switch(textContainer->GetTextAlignment())
+            {
+            case TextAlignment::LEFT:
+                position.x = m_position.x;
+                break;
+            
+            case TextAlignment::CENTER:
+                position.x = m_position.x + (m_dimensions.width - dimensions.width) / 2;
+                break;
+
+            case TextAlignment::RIGHT:
+                position.x = m_position.x + m_dimensions.width - dimensions.width;
+                break;
+            }   
+        }
+        
+        drawable->SetPosition(position);
+    }
+
+    void Button::Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window)
+    {
+        Widget::Init(display, window);
+        SetContentPosition();
+    }
+
+    void Button::CreateButton()
+    {
         auto left = std::make_unique<Line>(
-            Position{m_style.position.x, m_style.position.y + m_style.borderRadius},
-            Position{m_style.position.x, m_style.position.y + m_style.dimensions.height - m_style.borderRadius}
+            Position{m_position.x, m_position.y + m_style.borderRadius},
+            Position{m_position.x, m_position.y + m_dimensions.height - m_style.borderRadius}
         );
         auto right = std::make_unique<Line>(
-            Position{m_style.position.x + m_style.dimensions.width, m_style.position.y + m_style.borderRadius},
-            Position{m_style.position.x + m_style.dimensions.width, m_style.position.y + m_style.dimensions.height - m_style.borderRadius}
+            Position{m_position.x + m_dimensions.width, m_position.y + m_style.borderRadius},
+            Position{m_position.x + m_dimensions.width, m_position.y + m_dimensions.height - m_style.borderRadius}
         );
         auto bottom = std::make_unique<Line>(
-            Position{m_style.position.x + m_style.borderRadius, m_style.position.y + m_style.dimensions.height},
-            Position{m_style.position.x - m_style.borderRadius + m_style.dimensions.width, m_style.position.y + m_style.dimensions.height}
+            Position{m_position.x + m_style.borderRadius, m_position.y + m_dimensions.height},
+            Position{m_position.x - m_style.borderRadius + m_dimensions.width, m_position.y + m_dimensions.height}
         );
         auto top = std::make_unique<Line>(
-            Position{m_style.position.x + m_style.borderRadius, m_style.position.y},
-            Position{m_style.position.x - m_style.borderRadius + m_style.dimensions.width, m_style.position.y}
+            Position{m_position.x + m_style.borderRadius, m_position.y},
+            Position{m_position.x - m_style.borderRadius + m_dimensions.width, m_position.y}
         );
 
-        auto fill1 = std::make_unique<Square>(m_style.position.x, m_style.position.y + m_style.borderRadius, m_style.dimensions.width, m_style.dimensions.height - (m_style.borderRadius * 2));
+        auto fill1 = std::make_unique<Square>(
+            Position{m_position.x, m_position.y + m_style.borderRadius},
+            Dimensions{m_dimensions.width, m_dimensions.height - (m_style.borderRadius * 2)});
         fill1->Fill();
-        auto fill2 = std::make_unique<Square>(m_style.position.x + m_style.borderRadius, m_style.position.y, m_style.dimensions.width - m_style.borderRadius * 2, m_style.dimensions.height);
+        auto fill2 = std::make_unique<Square>(
+            Position{m_position.x + m_style.borderRadius, m_position.y},
+            Dimensions{m_dimensions.width - m_style.borderRadius * 2, m_dimensions.height});
         fill2->Fill();
 
-        if (style.borderRadius > 0)
+        if (m_style.borderRadius > 0)
         {
-            auto topLeft = std::make_unique<Arc>(m_style.position.x, m_style.position.y, m_style.borderRadius * 2, m_style.borderRadius * 2, 180, 90);
+            Dimensions arcDimensions{m_style.borderRadius * 2, m_style.borderRadius * 2};
+            auto topLeft = std::make_unique<Arc>(
+                m_position, 
+                arcDimensions,180, 90);
             topLeft->Fill();
-            auto topRight = std::make_unique<Arc>(m_style.position.x + m_style.dimensions.width - m_style.borderRadius * 2, m_style.position.y, m_style.borderRadius * 2, m_style.borderRadius * 2, 270, 90);
+
+            auto topRight = std::make_unique<Arc>(
+                Position{m_position.x + m_dimensions.width - m_style.borderRadius * 2, m_position.y},
+                arcDimensions, 270, 90);
             topRight->Fill();
-            auto bottomLeft = std::make_unique<Arc>(m_style.position.x, m_style.position.y + m_style.dimensions.height - m_style.borderRadius * 2, m_style.borderRadius * 2, m_style.borderRadius * 2, 90, 90);
+
+            auto bottomLeft = std::make_unique<Arc>(
+                Position{m_position.x, m_position.y + m_dimensions.height - m_style.borderRadius * 2},
+                arcDimensions, 90, 90);
             bottomLeft->Fill();
-            auto bottomRight = std::make_unique<Arc>(m_style.position.x + m_style.dimensions.width - m_style.borderRadius * 2, m_style.position.y + m_style.dimensions.height - m_style.borderRadius * 2, m_style.borderRadius * 2, m_style.borderRadius * 2, 0, 90);
+
+            auto bottomRight = std::make_unique<Arc>(
+                Position{m_position.x + m_dimensions.width - m_style.borderRadius * 2, m_position.y + m_dimensions.height - m_style.borderRadius * 2},
+                arcDimensions, 0, 90);
             bottomRight->Fill();
 
             AddDrawable(std::move(topLeft), &m_topLeftCornerIndex);
@@ -62,20 +168,6 @@ namespace XWindowLib
         AddDrawable(std::move(left), &m_leftIndex);
         AddDrawable(std::move(fill1), &m_fill1Index);
         AddDrawable(std::move(fill2), &m_fill2Index);
-
-        if (m_style.text.length() > 0)
-        {
-            auto textBox = std::make_unique<TextBox>(m_style.position, m_style.dimensions, m_style.text);
-            AddDrawable(std::move(textBox), &m_textBoxIndex);
-        }
-
-        ApplyStyle(m_style);
-    }
-
-    Button::Button(int x, int y, int width, int height)
-        : Button{Style{Button::s_defaultColor, {x, y}, {width, height}}}
-    {
-        
     }
 
     #pragma region hovering
@@ -94,10 +186,10 @@ namespace XWindowLib
 
     bool Button::IsHovering(int mouseX, int mouseY)
     {
-        return mouseX >= m_style.position.x
-            && mouseX <= m_style.position.x + m_style.dimensions.width
-            && mouseY >= m_style.position.y
-            && mouseY <= m_style.position.y + m_style.dimensions.height;
+        return mouseX >= m_position.x
+            && mouseX <= m_position.x + m_dimensions.width
+            && mouseY >= m_position.y
+            && mouseY <= m_position.y + m_dimensions.height;
     }
 
     #pragma endregion
@@ -180,7 +272,7 @@ namespace XWindowLib
         {
             IHaveColor* haveColor = dynamic_cast<IHaveColor*>(drawable.get());
             if (haveColor)
-                haveColor->SetColor(m_currentStyle.color);
+                haveColor->SetColor(m_currentColor);
         }
     }
 
@@ -194,6 +286,55 @@ namespace XWindowLib
     {
         SetColor(Color{r, g, b});
     }
+
+    const TextAlignment& Button::GetTextAlignment()
+    {
+        if (m_contentIndex >= 0)
+        {
+            const auto& drawable = m_drawables[m_contentIndex];
+            ITextContainer* textContainer = dynamic_cast<ITextContainer*>(drawable.get());
+            if (textContainer)
+            {
+                return textContainer->GetTextAlignment();
+            }
+        }
+        return TextAlignment::LEFT;
+    }
+
+    const VerticalAlignment& Button::GetTextVerticalAlignment()
+    {
+        if (m_contentIndex >= 0) {
+            const auto& drawable = m_drawables[m_contentIndex];
+            return drawable->GetVerticalAlignment();
+        }
+        return VerticalAlignment::TOP;
+    }
+
+
+    void Button::SetTextAlignment(TextAlignment textAlignment)
+    {
+        if (m_contentIndex >= 0)
+        {
+            const auto& drawable = m_drawables[m_contentIndex];
+            ITextContainer* textContainer = dynamic_cast<ITextContainer*>(drawable.get());
+            if (textContainer)
+            {
+                textContainer->SetTextAlignment(textAlignment);
+                SetContentPosition();
+            }
+        }
+    }
+
+    void Button::SetTextVerticalAlignment(VerticalAlignment verticalAlignment)
+    {
+        if (m_contentIndex >= 0)
+        {
+            const auto& drawable = m_drawables[m_contentIndex];
+            drawable->SetVerticalAlignment(verticalAlignment);
+            SetContentPosition();
+        }
+    }
+
 
     #pragma endregion
 }

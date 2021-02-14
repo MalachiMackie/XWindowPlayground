@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <vector>
 #include <memory>
+#include <map>
+#include <string>
 #include "Types/Shapes/Shape.h"
 #include "Types/Drawable.h"
 
@@ -24,7 +26,7 @@ namespace XWindowLib
 
         Atom m_wmDeleteMessage;
 
-        std::vector<std::unique_ptr<Drawable>> m_drawables;
+        std::map<std::string, std::unique_ptr<Drawable>> m_drawables;
 
     private:
         void Draw();
@@ -38,6 +40,9 @@ namespace XWindowLib
         void Initialize();
 
         void AddDrawable(std::unique_ptr<Drawable>&& drawable);
+        void AddDrawable(std::unique_ptr<Drawable>&& drawable, const std::string& name);
+
+        const std::unique_ptr<Drawable>& GetDrawable(const std::string& name);
 
         ~Manager();
     };

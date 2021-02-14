@@ -4,6 +4,13 @@
 
 namespace XWindowLib
 {
+
+    Square::Square(Position position, Dimensions dimensions)
+    {
+        SetPosition(position);
+        SetDimensions(dimensions);
+    }
+
     void Square::Draw()
     {
         if (m_display && m_window) {

@@ -13,12 +13,13 @@ namespace XWindowLib
         return FontManager::s_fontManager;
     }
 
-    std::shared_ptr<XFontStruct> FontManager::GetFont(std::string name)
+    XFontStruct* FontManager::GetFont(std::string name)
     {
-        std::shared_ptr<XFontStruct> font = m_fontMap[name];
+        auto* font = m_fontMap[name];
+        
         if (!font)
         {
-            m_fontMap[name] = std::move(std::shared_ptr<XFontStruct>(XLoadQueryFont(m_display.get(), name.c_str())));
+            m_fontMap[name] = XLoadQueryFont(m_display.get(), name.c_str());
             return m_fontMap[name];
         }
         else
@@ -29,12 +30,12 @@ namespace XWindowLib
 
     int FontManager::GetTextWidth(std::string font, std::string text)
     {
-        return XTextWidth(GetFont(font).get(), text.c_str(), text.length());
+        return XTextWidth(GetFont(font), text.c_str(), text.length());
     }
 
     int FontManager::GetFontHeight(std::string font)
     {
-        std::shared_ptr<XFontStruct> fontStruct = GetFont(font);
+        const auto& fontStruct = GetFont(font);
         return fontStruct->max_bounds.ascent + fontStruct->max_bounds.descent;
     }
 
@@ -42,7 +43,7 @@ namespace XWindowLib
     {
         for (auto &&font : m_fontMap)
         {
-            XFreeFont(m_display.get(), font.second.get());
+            XFreeFont(m_display.get(), font.second);
         }
         m_fontMap.clear();
     }

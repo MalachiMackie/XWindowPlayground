@@ -12,19 +12,20 @@ namespace XWindowLib
     class TextBox : public Widget, public ITextContainer
     {
     private:
-        Position m_position;
-        Dimensions m_dimensions;
         std::string m_content;
         int m_borderWidth;
 
-        int m_borderIndex;
+        int m_borderIndex = -1;
         GC m_graphicsContext;
 
     public:
-        TextBox(Position position, Dimensions dimensions, std::string content, TextAlignment textAlignment = TextAlignment::LEFT, int borderWidth = 0);
+        TextBox(Position position, Dimensions dimensions, std::string content, TextAlignment textAlignment = TextAlignment::LEFT, VerticalAlignment verticalAlignment = VerticalAlignment::TOP, int borderWidth = 0);
 
         virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window) override;
         virtual void Draw() override;
+
+        virtual void SetDimensions(Dimensions dimensions) override;
+        virtual void SetPosition(Position position) override;
 
         virtual ~TextBox() override;
     };

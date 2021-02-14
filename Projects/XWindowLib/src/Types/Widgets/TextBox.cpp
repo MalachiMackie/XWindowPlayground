@@ -7,10 +7,13 @@
 
 namespace XWindowLib
 {
-    TextBox::TextBox(Position position, Dimensions dimensions, std::string content, TextAlignment textAlignment, int borderWidth)
-        : m_position{position}, m_dimensions{dimensions}, m_content{content}, m_borderWidth{borderWidth}
+    TextBox::TextBox(Position position, Dimensions dimensions, std::string content, TextAlignment textAlignment, VerticalAlignment verticalAlignment, int borderWidth)
+        : m_content{content}, m_borderWidth{borderWidth}
     {
+        SetPosition(position);
+        SetDimensions(dimensions);
         m_textAlignment = textAlignment;
+        m_verticalAlignment = verticalAlignment;
         if (m_borderWidth > 0)
         {
             auto square = std::make_unique<Square>(position, dimensions);
@@ -24,13 +27,32 @@ namespace XWindowLib
 
     void TextBox::Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window)
     {
+        if (m_isInitialized)
+        {
+            return;
+        }
         Widget::Init(display, window);
         InitFontManager(display);
         m_graphicsContext = XCreateGC(m_display.get(), *m_window, 0, nullptr);
                 
-        std::shared_ptr<XFontStruct> font = m_fontManager->GetFont(m_fontName);
+        const auto& font = m_fontManager->GetFont(m_fontName);
         
         XSetFont(m_display.get(), m_graphicsContext, font->fid);
+
+        if (m_dimensions.height <= 0)
+        {
+            m_dimensions.height = font->max_bounds.ascent + font->max_bounds.descent;
+        }
+        if (m_dimensions.width <= 0)
+        {
+            m_dimensions.width = m_fontManager->GetTextWidth(m_fontName, m_content);
+        }
+        if (m_borderWidth > 0)
+        {
+            const std::unique_ptr<Drawable>& border = m_drawables[m_borderIndex];
+            border->SetDimensions(m_dimensions);
+            border->SetPosition(m_position);
+        }
     }
 
     void TextBox::Draw()
@@ -41,7 +63,7 @@ namespace XWindowLib
             int textWidth = m_fontManager->GetTextWidth(m_fontName, m_content);
             int textHeight = m_fontManager->GetFontHeight(m_fontName);
             int x;
-            int y = m_position.y + (m_dimensions.height + textHeight) / 2;
+            int y = m_position.y + textHeight;
             switch (m_textAlignment)
             {
             default:
@@ -69,5 +91,24 @@ namespace XWindowLib
     TextBox::~TextBox()
     {
         delete m_textItem.chars;
+    }
+
+    void TextBox::SetPosition(Position position)
+    { 
+        m_position = position;
+        if (m_borderIndex >= 0)
+        {
+            const auto& border = m_drawables[m_borderIndex];
+            border->SetPosition(m_position);
+        }
+    }
+
+    void TextBox::SetDimensions(Dimensions dimensions)
+    {
+        m_dimensions = dimensions;
+        if (m_borderIndex >= 0) {
+            const auto& border = m_drawables[m_borderIndex];
+            border->SetDimensions(m_dimensions);
+        }
     }
 }

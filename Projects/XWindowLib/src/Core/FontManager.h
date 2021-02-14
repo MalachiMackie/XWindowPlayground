@@ -18,14 +18,14 @@ namespace XWindowLib
     private:
         std::shared_ptr<Display> m_display;
 
-        std::map<std::string, std::shared_ptr<XFontStruct>> m_fontMap;
+        std::map<std::string, XFontStruct*> m_fontMap;
 
     public:
         FontManager(std::shared_ptr<Display> display)
             : m_display{display}{};
         ~FontManager();
 
-        std::shared_ptr<XFontStruct> GetFont(std::string name);
+        XFontStruct* GetFont(std::string name);
 
         int GetTextWidth(std::string name, std::string text);
         int GetFontHeight(std::string name);
