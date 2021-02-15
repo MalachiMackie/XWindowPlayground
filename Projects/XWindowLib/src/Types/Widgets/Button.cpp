@@ -321,6 +321,7 @@ namespace XWindowLib
             {
                 textContainer->SetTextAlignment(textAlignment);
                 SetContentPosition();
+                Draw();
             }
         }
     }
@@ -332,6 +333,7 @@ namespace XWindowLib
             const auto& drawable = m_drawables[m_contentIndex];
             drawable->SetVerticalAlignment(verticalAlignment);
             SetContentPosition();
+            Draw();
         }
     }
 

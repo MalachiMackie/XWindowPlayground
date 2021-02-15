@@ -8,4 +8,12 @@ namespace XWindowLib
         m_window = window;
         m_isInitialized = true;
     }
+
+    void Drawable::Draw()
+    {
+        if (m_onDraw)
+        {
+            m_onDraw();
+        }
+    }
 }

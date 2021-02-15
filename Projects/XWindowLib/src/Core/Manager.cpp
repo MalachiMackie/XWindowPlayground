@@ -50,10 +50,16 @@ namespace XWindowLib
 
     int Manager::EventLoop()
     {
-        XClearWindow(m_display.get(), *m_window);
-        Draw(); // TODO: only do this when XClearArea is called
         XEvent e;
         XNextEvent(m_display.get(), &e);
+
+        if (m_changed)
+        {
+            XClearWindow(m_display.get(), *m_window);
+            Draw();
+            m_changed = false;
+        }
+
         if (e.type == MapNotify || e.type == ConfigureNotify)
         {
             Draw();
@@ -120,6 +126,7 @@ namespace XWindowLib
 
     void Manager::AddDrawable(std::unique_ptr<Drawable>&& drawable)
     {
+        drawable->SetOnDraw([this](){m_changed = true;});
         AddDrawable(std::move(drawable), generate_hex(10));
     }
 

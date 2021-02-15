@@ -9,10 +9,18 @@ using namespace XWindowLib;
 
 void ButtonsWithMovableText(const std::unique_ptr<Manager>& manager)
 {
+    Button::Style hoverStyle;
+    hoverStyle.color = {0, 65000, 0};
+
+    Button::Style clickStyle;
+    clickStyle.color = {0, 0, 65000};
+
     Button::Style style;
     style.borderRadius = 5;
     style.color = {65000, 0, 0};
     auto movingButton = std::make_unique<Button>(style, Position{120, 10}, Dimensions{100, 100}, "Hello");
+    movingButton->SetHoverStyle(hoverStyle);
+    movingButton->SetClickStyle(clickStyle);
 
     Button::Style buttonStyle;
     buttonStyle.borderRadius = 5;

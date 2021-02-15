@@ -8,5 +8,6 @@ namespace XWindowLib
         {
             XDrawLine(m_display.get(), *m_window, m_graphicsContext, m_pos1.x, m_pos1.y, m_pos2.x, m_pos2.y);
         }
+        Drawable::Draw();
     }
 }

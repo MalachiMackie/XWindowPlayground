@@ -19,14 +19,11 @@ namespace XWindowLib
             else
                 XDrawRectangle(m_display.get(), *m_window, m_graphicsContext, m_position.x, m_position.y, m_dimensions.width, m_dimensions.height);
         }
+        Drawable::Draw();
     }
 
     void Square::Set(Position position, Dimensions dimensions)
     {
-        if (m_display && (m_position != position || m_dimensions != dimensions))
-        {
-            XClearArea(m_display.get(), *m_window, m_position.x, m_position.y, m_dimensions.width, m_dimensions.height, false);
-        }
         m_position = position;
         m_dimensions = dimensions;
     }

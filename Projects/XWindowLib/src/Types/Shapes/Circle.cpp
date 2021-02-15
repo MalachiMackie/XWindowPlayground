@@ -13,6 +13,7 @@ namespace XWindowLib
             else
                 XDrawArc(m_display.get(), *m_window, m_graphicsContext, m_position.x, m_position.y, m_dimensions.width, m_dimensions.height, 0, 360 * 64);
         }
+        Drawable::Draw();
     }
 
     Circle::Circle(Position position, Dimensions dimensions)

@@ -11,6 +11,7 @@ namespace XWindowLib
             else
                 XDrawArc(m_display.get(), *m_window, m_graphicsContext, m_position.x, m_position.y, m_dimensions.width, m_dimensions.height, 0 - m_startDegrees * 64, 0 - m_degrees * 64);
         }
+        Drawable::Draw();
     }
 
     Arc::Arc(Position position, Dimensions dimensions, int startDegrees, int degrees)

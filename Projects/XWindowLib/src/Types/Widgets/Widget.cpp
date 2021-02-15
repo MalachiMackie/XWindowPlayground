@@ -8,6 +8,7 @@ namespace XWindowLib
         {
             drawable->Draw();
         }
+        Drawable::Draw();
     }
 
     void Widget::AddDrawable(std::unique_ptr<Drawable>&& drawable, int* index)

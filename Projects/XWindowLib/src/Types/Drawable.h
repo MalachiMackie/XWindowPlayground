@@ -3,6 +3,7 @@
 
 #include <X11/Xlib.h>
 #include <memory>
+#include <functional>
 
 #include "Types/VerticalAlignment.h"
 #include "Utils/Pairs.h"
@@ -11,6 +12,9 @@ namespace XWindowLib
 {
     class Drawable
     {
+    private:
+        std::function<void(void)> m_onDraw;
+
     protected:
         std::shared_ptr<Display> m_display;
         std::shared_ptr<Window> m_window;
@@ -22,7 +26,7 @@ namespace XWindowLib
         Dimensions m_dimensions;
 
     public:
-        virtual void Draw() = 0;
+        virtual void Draw();
         virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window);
 
         virtual void SetPosition(Position position) { m_position = position; }
@@ -33,6 +37,7 @@ namespace XWindowLib
         const VerticalAlignment& GetVerticalAlignment() { return m_verticalAlignment; }
 
         void SetVerticalAlignment(VerticalAlignment verticalAlignment) { m_verticalAlignment = verticalAlignment; }
+        void SetOnDraw(std::function<void(void)> onDraw) { m_onDraw = onDraw; }
     };
 }
 
