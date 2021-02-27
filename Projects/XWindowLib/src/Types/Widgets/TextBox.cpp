@@ -25,6 +25,20 @@ namespace XWindowLib
         strcpy(m_textItem.chars, m_content.c_str());
     }
 
+    TextBox::TextBox(std::string content)
+        : m_content{content}
+    {
+        SetPosition(Position{});
+        SetDimensions(Dimensions{});
+        m_textAlignment = TextAlignment::LEFT;
+        m_verticalAlignment = VerticalAlignment::MIDDLE;
+
+        m_textItem.nchars = m_content.size();
+        m_textItem.chars = new char[m_content.length()];
+
+        strcpy(m_textItem.chars, m_content.c_str());
+    }
+
     void TextBox::Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window)
     {
         if (m_isInitialized)

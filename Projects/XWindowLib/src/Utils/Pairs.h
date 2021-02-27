@@ -60,7 +60,50 @@ namespace XWindowLib
             return !(*this == other);
         }
     };
-    
+
+    struct Margin
+    {
+        int left = 0;
+        int top = 0;
+        int right = 0;
+        int bottom = 0;
+
+        Margin() {};
+        Margin(int margin)
+        {
+            left = margin;
+            top = margin;
+            right = margin;
+            bottom = margin;
+        }
+        Margin(int horizontal, int vertical)
+        {
+            left = horizontal;
+            right = horizontal;
+            top = vertical;
+            bottom = vertical;
+        }
+        Margin(int left, int top, int right, int bottom)
+        {
+            Margin::left = left;
+            Margin::top = top;
+            Margin::right = right;
+            Margin::bottom =  bottom;
+        }
+
+        bool operator==(Margin other)
+        {
+            return left == other.left
+                && top == other.top
+                && right == other.right
+                && bottom == other.bottom;
+        }
+
+        bool operator!=(Margin other)
+        {
+            return !(*this == other);
+        }
+    };
 }
 
 #endif

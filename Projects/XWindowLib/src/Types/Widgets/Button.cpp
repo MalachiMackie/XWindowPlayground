@@ -180,7 +180,7 @@ namespace XWindowLib
 
     void Button::OnStopHover()
     {
-        if (!m_hasClickStyle || !IsClicking() && m_hasHoverStyle)
+        if ((!m_hasClickStyle || !IsClicking()) && m_hasHoverStyle)
             ApplyStyle(m_style);
     }
 
@@ -249,8 +249,11 @@ namespace XWindowLib
 
     void Button::SetStyle(Style style)
     {
-        m_style = style;
-        ApplyStyle(m_style);
+        if (m_style != style)
+        {
+            m_style = style;
+            ApplyStyle(m_style);
+        }
     }
 
     void Button::SetHoverStyle(Style style)
@@ -287,7 +290,7 @@ namespace XWindowLib
         SetColor(Color{r, g, b});
     }
 
-    const TextAlignment& Button::GetTextAlignment()
+    bool Button::TryGetTextAlignment(TextAlignment* outTextAlignment)
     {
         if (m_contentIndex >= 0)
         {
@@ -295,19 +298,22 @@ namespace XWindowLib
             ITextContainer* textContainer = dynamic_cast<ITextContainer*>(drawable.get());
             if (textContainer)
             {
-                return textContainer->GetTextAlignment();
+                *outTextAlignment = textContainer->GetTextAlignment();
+                return true;
             }
         }
-        return TextAlignment::LEFT;
+
+        return false;
     }
 
-    const VerticalAlignment& Button::GetTextVerticalAlignment()
+    bool Button::TryGetTextVerticalAlignment(VerticalAlignment* outVerticalAlignment)
     {
-        if (m_contentIndex >= 0) {
-            const auto& drawable = m_drawables[m_contentIndex];
-            return drawable->GetVerticalAlignment();
-        }
-        return VerticalAlignment::TOP;
+        if (m_contentIndex < 0)
+            return false;
+
+        const auto& drawable = m_drawables[m_contentIndex];
+        *outVerticalAlignment = drawable->GetVerticalAlignment();
+        return true;
     }
 
 

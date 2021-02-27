@@ -12,5 +12,6 @@
 #include "Types/Widgets/Widget.h"
 #include "Types/Widgets/Button.h"
 #include "Types/Widgets/TextBox.h"
+#include "Types/Widgets/StackContainer.h"
 
 #endif

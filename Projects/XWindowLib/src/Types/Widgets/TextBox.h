@@ -13,12 +13,13 @@ namespace XWindowLib
     {
     private:
         std::string m_content;
-        int m_borderWidth;
+        int m_borderWidth = 0;
 
         int m_borderIndex = -1;
         GC m_graphicsContext;
 
     public:
+        TextBox(std::string content);
         TextBox(Position position, Dimensions dimensions, std::string content, TextAlignment textAlignment = TextAlignment::LEFT, VerticalAlignment verticalAlignment = VerticalAlignment::TOP, int borderWidth = 0);
 
         virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window) override;

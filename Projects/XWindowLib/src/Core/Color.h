@@ -52,6 +52,19 @@ namespace XWindowLib
             hash ^= hasher(m_b) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
             return hash;
         }
+
+        bool operator==(Color other)
+        {
+            return m_r == other.m_r
+                && m_g == other.m_g
+                && m_b == other.m_b
+                && m_set == other.m_set;
+        }
+
+        bool operator!=(Color other)
+        {
+            return !(*this == other);
+        }
     };
 }
 

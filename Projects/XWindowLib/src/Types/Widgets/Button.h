@@ -18,6 +18,17 @@ namespace XWindowLib
         {
             Color color;
             int borderRadius = 0;
+
+            bool operator==(Style other)
+            {
+                return borderRadius == other.borderRadius
+                    && color == other.color;
+            }
+
+            bool operator!=(Style other)
+            {
+                return !(*this == other);
+            }
         };
 
     private:
@@ -101,8 +112,8 @@ namespace XWindowLib
         void SetHoverStyle(Button::Style style);
         void SetClickStyle(Button::Style style);
 
-        const TextAlignment& GetTextAlignment();
-        const VerticalAlignment& GetTextVerticalAlignment();
+        bool TryGetTextAlignment(TextAlignment* outTextAlignment);
+        bool TryGetTextVerticalAlignment(VerticalAlignment* outVerticalAlignment);
 
         void SetTextAlignment(TextAlignment textAlignment);
         void SetTextVerticalAlignment(VerticalAlignment verticalAlignment);

@@ -24,6 +24,7 @@ namespace XWindowLib
         VerticalAlignment m_verticalAlignment;
         Position m_position;
         Dimensions m_dimensions;
+        Margin m_margin;
 
     public:
         virtual void Draw();
@@ -32,10 +33,12 @@ namespace XWindowLib
         virtual void SetPosition(Position position) { m_position = position; }
         virtual void SetDimensions(Dimensions dimensions) { m_dimensions = dimensions; }
 
+        const Margin& GetMargin() { return m_margin; }
         const Position& GetPosition() { return m_position; }
         const Dimensions& GetDimensions() { return m_dimensions; }
         const VerticalAlignment& GetVerticalAlignment() { return m_verticalAlignment; }
 
+        void SetMargin(const Margin& margin) { m_margin = margin; }
         void SetVerticalAlignment(VerticalAlignment verticalAlignment) { m_verticalAlignment = verticalAlignment; }
         void SetOnDraw(std::function<void(void)> onDraw) { m_onDraw = onDraw; }
     };

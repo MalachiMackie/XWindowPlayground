@@ -6,7 +6,7 @@ namespace XWindowLib
     class Hoverable
     {
     protected:
-        bool m_isHovering;
+        bool m_isHovering = false;
 
     protected:
         virtual void OnHover() = 0;

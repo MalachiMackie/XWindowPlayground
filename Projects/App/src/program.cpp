@@ -28,11 +28,12 @@ void ButtonsWithMovableText(const std::unique_ptr<Manager>& manager)
     auto button1 = std::make_unique<Button>(buttonStyle, Position{10, 50}, Dimensions{100, 30}, "Vertical");
     button1->SetOnLeftClick([&manager](){
         Button* button = dynamic_cast<Button*>(manager->GetDrawable("movingButton").get());
-        if (!button)
+        VerticalAlignment buttonVerticalAlignment;
+        if (!button || !button->TryGetTextVerticalAlignment(&buttonVerticalAlignment))
         {
             return;
         }
-        switch(button->GetTextVerticalAlignment())
+        switch(buttonVerticalAlignment)
         {
             default:
             case VerticalAlignment::TOP:
@@ -50,11 +51,12 @@ void ButtonsWithMovableText(const std::unique_ptr<Manager>& manager)
     auto button2 = std::make_unique<Button>(buttonStyle, Position{10, 10}, Dimensions{100, 30}, "Horizontal");
     button2->SetOnLeftClick([& manager](){
         Button* button = dynamic_cast<Button*>(manager->GetDrawable("movingButton").get());
-        if (!button)
+        TextAlignment buttonTextAlignment;
+        if (!button || !button->TryGetTextAlignment(&buttonTextAlignment))
         {
             return;
         }
-        switch (button->GetTextAlignment())
+        switch (buttonTextAlignment)
         {
         default:
         case TextAlignment::LEFT:
@@ -74,11 +76,56 @@ void ButtonsWithMovableText(const std::unique_ptr<Manager>& manager)
     manager->AddDrawable(std::move(movingButton), "movingButton");
 }
 
+void HorizontalContainer(const std::unique_ptr<Manager>& manager)
+{
+    auto textBox = std::make_unique<TextBox>("1.");
+    textBox->SetMargin(Margin{10});
+
+    auto textBox2 = std::make_unique<TextBox>("2.");
+    textBox2->SetMargin(Margin{10});
+
+    auto textBox3 = std::make_unique<TextBox>("3.");
+    textBox3->SetMargin(Margin{10});
+
+    std::unique_ptr<StackContainer> container = std::make_unique<StackContainer>();
+    container->SetDimensions(Dimensions{600, 20});
+    container->SetDrawDirection(StackContainer::DrawDirection::RIGHT_TO_LEFT);
+    container->Add(std::move(textBox));
+    container->Add(std::move(textBox2));
+    container->Add(std::move(textBox3));
+    manager->AddDrawable(std::move(container), "Container");
+    dynamic_cast<StackContainer*>(manager->GetDrawable("Container").get())->InitDrawables();
+
+    auto button = std::make_unique<Button>(Position{10, 50}, Dimensions{100, 30});
+    button->SetOnLeftClick([&manager](){
+        StackContainer* container = dynamic_cast<StackContainer*>(manager->GetDrawable("Container").get());
+        StackContainer::DrawDirection drawDirection = container->GetDrawDirection();
+        switch (drawDirection)
+        {
+        default:
+        case StackContainer::DrawDirection::LEFT_TO_RIGHT:
+        {
+            container->SetDrawDirection(StackContainer::DrawDirection::RIGHT_TO_LEFT);
+            break;
+        }
+        
+        case StackContainer::DrawDirection::RIGHT_TO_LEFT:
+        {
+            container->SetDrawDirection(StackContainer::DrawDirection::LEFT_TO_RIGHT);
+            break;
+        }
+        }
+    });
+
+    manager->AddDrawable(std::move(button));
+}
+
 int main() {
     std::unique_ptr<Manager> manager = std::make_unique<Manager>(1280, 720);
     manager->Initialize();
 
-    ButtonsWithMovableText(manager);
+    // ButtonsWithMovableText(manager);
+    HorizontalContainer(manager);
 
     int returnCode = 0;
     while (returnCode == 0)

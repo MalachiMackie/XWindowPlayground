@@ -53,13 +53,6 @@ namespace XWindowLib
         XEvent e;
         XNextEvent(m_display.get(), &e);
 
-        if (m_changed)
-        {
-            XClearWindow(m_display.get(), *m_window);
-            Draw();
-            m_changed = false;
-        }
-
         if (e.type == MapNotify || e.type == ConfigureNotify)
         {
             Draw();
@@ -102,6 +95,13 @@ namespace XWindowLib
             }
         }
 
+        if (m_changed)
+        {
+            XClearWindow(m_display.get(), *m_window);
+            Draw();
+            m_changed = false;
+        }
+
         return 0;
     }
 
@@ -126,12 +126,14 @@ namespace XWindowLib
 
     void Manager::AddDrawable(std::unique_ptr<Drawable>&& drawable)
     {
-        drawable->SetOnDraw([this](){m_changed = true;});
         AddDrawable(std::move(drawable), generate_hex(10));
     }
 
     void Manager::AddDrawable(std::unique_ptr<Drawable>&& drawable, const std::string& name)
     {
+        drawable->SetOnDraw([this](){
+            m_changed = true;
+        });
         drawable->Init(m_display, m_window);
         const auto& existing = m_drawables[name];
         if (existing)
