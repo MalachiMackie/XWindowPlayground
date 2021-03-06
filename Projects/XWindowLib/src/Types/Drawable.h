@@ -24,6 +24,7 @@ namespace XWindowLib
         VerticalAlignment m_verticalAlignment;
         Position m_position;
         Dimensions m_dimensions;
+        Dimensions m_maxDimensions = Dimensions{50000, 50000};
         Margin m_margin;
 
     public:
@@ -31,7 +32,8 @@ namespace XWindowLib
         virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window);
 
         virtual void SetPosition(Position position) { m_position = position; }
-        virtual void SetDimensions(Dimensions dimensions) { m_dimensions = dimensions; }
+        virtual void SetDimensions(Dimensions dimensions);
+        void SetMaxDimensions(Dimensions dimensions);
 
         const Margin& GetMargin() { return m_margin; }
         const Position& GetPosition() { return m_position; }

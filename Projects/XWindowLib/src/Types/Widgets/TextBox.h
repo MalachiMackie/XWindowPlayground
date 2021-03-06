@@ -18,6 +18,9 @@ namespace XWindowLib
         int m_borderIndex = -1;
         GC m_graphicsContext;
 
+    private:
+        void CalculateDimensions();
+
     public:
         TextBox(std::string content);
         TextBox(Position position, Dimensions dimensions, std::string content, TextAlignment textAlignment = TextAlignment::LEFT, VerticalAlignment verticalAlignment = VerticalAlignment::TOP, int borderWidth = 0);
@@ -27,8 +30,11 @@ namespace XWindowLib
 
         virtual void SetDimensions(Dimensions dimensions) override;
         virtual void SetPosition(Position position) override;
+        void SetBorderWidth(int borderWidth);
+        int GetBorderWidth() { return m_borderWidth; }
 
-        virtual ~TextBox() override;
+        virtual void SetText(std::string text) override;
+        virtual const std::string& GetText() override { return m_content; }
     };
 }
 

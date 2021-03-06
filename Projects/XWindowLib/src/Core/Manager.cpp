@@ -59,6 +59,7 @@ namespace XWindowLib
         }
         else if (e.type == ClientMessage && e.xclient.data.l[0] == m_wmDeleteMessage)
         {
+            FontManager::GetFontManager(m_display).FreeFonts();
             return 1;
         }
         else if (e.type == MotionNotify)

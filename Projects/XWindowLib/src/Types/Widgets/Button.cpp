@@ -43,13 +43,69 @@ namespace XWindowLib
     {
         if (content.length() > 0)
         {
-            std::unique_ptr<TextBox> textBox = std::make_unique<TextBox>(
-                m_position, Dimensions{0,0}, content, TextAlignment::CENTER, VerticalAlignment::MIDDLE
+            auto textBox = std::make_unique<TextBox>(
+                m_position, Dimensions::AUTO, content, TextAlignment::CENTER, VerticalAlignment::MIDDLE
             );
             AddDrawable(std::move(textBox), &m_contentIndex);
         }
 
         ApplyStyle(m_style);
+    }
+    
+    void Button::SetText(std::string text)
+    {
+        Dimensions textDimensions;
+        if (m_contentIndex < 0)
+        {
+            auto textBox = std::make_unique<TextBox>(
+                m_position, Dimensions{true}, text, TextAlignment::CENTER, VerticalAlignment::MIDDLE
+            );
+            AddDrawable(std::move(textBox), &m_contentIndex);
+            textDimensions = m_drawables[m_contentIndex]->GetDimensions();
+        }
+        else
+        {
+            const auto& drawable = m_drawables[m_contentIndex];
+            auto* textContainer = dynamic_cast<ITextContainer*>(drawable.get());
+            textContainer->SetText(text);
+            textDimensions = drawable->GetDimensions();
+
+        }
+        if (m_dimensions.automatic)
+        {
+            SetDimensions(Dimensions{textDimensions.width + m_padding.left + m_padding.right, m_dimensions.height, m_dimensions.automatic});
+            UpdateSize();
+        }
+        
+        Draw();
+    }
+
+    void Button::SetDimensions(Dimensions dimensions)
+    {
+        Drawable::SetDimensions(dimensions);
+        if (m_contentIndex >= 0)
+        {
+            const auto& drawable = m_drawables[m_contentIndex];
+            if (!m_dimensions.automatic)
+            {
+                drawable->SetMaxDimensions(m_dimensions);
+            }
+            else
+            {
+                const auto& textBoxDimensions = drawable->GetDimensions();
+                Dimensions tempDimensions = m_dimensions;
+                if (textBoxDimensions.height > tempDimensions.height)
+                {
+                    tempDimensions.height = textBoxDimensions.height;
+                }
+                if (textBoxDimensions.width > tempDimensions.width)
+                {
+                    tempDimensions.width = textBoxDimensions.width;
+                }
+                Drawable::SetDimensions(tempDimensions);
+            }
+        }
+        Draw();
     }
 
     void Button::SetContentPosition()
@@ -83,13 +139,21 @@ namespace XWindowLib
             switch(textContainer->GetTextAlignment())
             {
             case TextAlignment::LEFT:
-                position.x = m_position.x;
+                position.x = m_position.x + m_padding.left;
                 break;
             
             case TextAlignment::CENTER:
-                position.x = m_position.x + (m_dimensions.width - dimensions.width) / 2;
+            {
+                if (m_dimensions.automatic)
+                {
+                    position.x = m_position.x + m_padding.left;
+                }
+                else
+                {
+                    position.x = m_position.x + (m_dimensions.width - dimensions.width) / 2;
+                }
                 break;
-
+            }
             case TextAlignment::RIGHT:
                 position.x = m_position.x + m_dimensions.width - dimensions.width;
                 break;
@@ -97,63 +161,112 @@ namespace XWindowLib
         }
         
         drawable->SetPosition(position);
+        if (m_dimensions.automatic)
+        {
+            SetDimensions(Dimensions{dimensions.width + m_padding.left + m_padding.right, m_dimensions.height, true});
+        }
     }
 
     void Button::Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window)
     {
         Widget::Init(display, window);
         SetContentPosition();
+        UpdateSize();
+    }
+
+    void Button::UpdateSize()
+    {
+        if (m_topIndex >= 0)
+        {
+            Line* top = dynamic_cast<Line*>(m_drawables[m_topIndex].get());
+            top->SetPosition1(Position{m_position.x + m_style.borderRadius, m_position.y});
+            top->SetPosition2(Position{m_position.x - m_style.borderRadius + m_dimensions.width, m_position.y});
+        }
+        if (m_bottomIndex >= 0)
+        {
+            Line* bottom = dynamic_cast<Line*>(m_drawables[m_bottomIndex].get());
+            bottom->SetPosition1(Position{m_position.x + m_style.borderRadius, m_position.y + m_dimensions.height});
+            bottom->SetPosition2(Position{m_position.x - m_style.borderRadius + m_dimensions.width, m_position.y + m_dimensions.height});
+        }
+        if (m_leftIndex >= 0)
+        {
+            Line* left = dynamic_cast<Line*>(m_drawables[m_leftIndex].get());
+            left->SetPosition1(Position{m_position.x, m_position.y + m_style.borderRadius});
+            left->SetPosition2(Position{m_position.x, m_position.y + m_dimensions.height - m_style.borderRadius});
+        }
+        if (m_rightIndex >= 0)
+        {
+            Line* right = dynamic_cast<Line*>(m_drawables[m_rightIndex].get());
+            right->SetPosition1(Position{m_position.x + m_dimensions.width, m_position.y + m_style.borderRadius});
+            right->SetPosition2(Position{m_position.x + m_dimensions.width, m_position.y + m_dimensions.height - m_style.borderRadius});
+        }
+
+        if (m_fill1Index >= 0)
+        {
+            const auto& fill1 = m_drawables[m_fill1Index];
+            fill1->SetPosition(Position{m_position.x, m_position.y + m_style.borderRadius});
+            fill1->SetDimensions(Dimensions{m_dimensions.width, m_dimensions.height - (m_style.borderRadius * 2)});
+        }
+
+        if (m_fill2Index >= 0)
+        {
+            const auto& fill2 = m_drawables[m_fill2Index];
+            fill2->SetPosition(Position{m_position.x + m_style.borderRadius, m_position.y});
+            fill2->SetDimensions(Dimensions{m_dimensions.width - m_style.borderRadius * 2, m_dimensions.height});
+        }
+
+        if (m_style.borderRadius > 0)
+        {
+            Dimensions arcDimensions{m_style.borderRadius * 2, m_style.borderRadius * 2};
+            auto topLeftPosition = m_position;
+            auto topRightPosition = Position{m_position.x + m_dimensions.width - m_style.borderRadius * 2, m_position.y};
+            auto bottomLeftPosition = Position{m_position.x, m_position.y + m_dimensions.height - m_style.borderRadius * 2};
+            auto bottomRightPosition = Position{m_position.x + m_dimensions.width - m_style.borderRadius * 2, m_position.y + m_dimensions.height - m_style.borderRadius * 2};
+
+            if (m_topLeftCornerIndex >= 0)
+            {
+                m_drawables[m_topLeftCornerIndex]->SetPosition(topLeftPosition);
+            }
+            if (m_topRightCornerIndex >= 0)
+            {
+                m_drawables[m_topRightCornerIndex]->SetPosition(topRightPosition);
+            }
+            if (m_bottomLeftCornerIndex >= 0)
+            {
+                m_drawables[m_bottomLeftCornerIndex]->SetPosition(bottomLeftPosition);
+            }
+            if (m_bottomRightCornerIndex >= 0)
+            {
+                m_drawables[m_bottomRightCornerIndex]->SetPosition(bottomRightPosition);
+            }
+        }
     }
 
     void Button::CreateButton()
     {
-        auto left = std::make_unique<Line>(
-            Position{m_position.x, m_position.y + m_style.borderRadius},
-            Position{m_position.x, m_position.y + m_dimensions.height - m_style.borderRadius}
-        );
-        auto right = std::make_unique<Line>(
-            Position{m_position.x + m_dimensions.width, m_position.y + m_style.borderRadius},
-            Position{m_position.x + m_dimensions.width, m_position.y + m_dimensions.height - m_style.borderRadius}
-        );
-        auto bottom = std::make_unique<Line>(
-            Position{m_position.x + m_style.borderRadius, m_position.y + m_dimensions.height},
-            Position{m_position.x - m_style.borderRadius + m_dimensions.width, m_position.y + m_dimensions.height}
-        );
-        auto top = std::make_unique<Line>(
-            Position{m_position.x + m_style.borderRadius, m_position.y},
-            Position{m_position.x - m_style.borderRadius + m_dimensions.width, m_position.y}
-        );
+        auto left = std::make_unique<Line>();
+        auto right = std::make_unique<Line>();
+        auto bottom = std::make_unique<Line>();
+        auto top = std::make_unique<Line>();
 
-        auto fill1 = std::make_unique<Square>(
-            Position{m_position.x, m_position.y + m_style.borderRadius},
-            Dimensions{m_dimensions.width, m_dimensions.height - (m_style.borderRadius * 2)});
+        auto fill1 = std::make_unique<Square>();
         fill1->Fill();
-        auto fill2 = std::make_unique<Square>(
-            Position{m_position.x + m_style.borderRadius, m_position.y},
-            Dimensions{m_dimensions.width - m_style.borderRadius * 2, m_dimensions.height});
+        auto fill2 = std::make_unique<Square>();
         fill2->Fill();
 
         if (m_style.borderRadius > 0)
         {
             Dimensions arcDimensions{m_style.borderRadius * 2, m_style.borderRadius * 2};
-            auto topLeft = std::make_unique<Arc>(
-                m_position, 
-                arcDimensions,180, 90);
+            auto topLeft = std::make_unique<Arc>(Position{}, arcDimensions,180, 90);
             topLeft->Fill();
 
-            auto topRight = std::make_unique<Arc>(
-                Position{m_position.x + m_dimensions.width - m_style.borderRadius * 2, m_position.y},
-                arcDimensions, 270, 90);
+            auto topRight = std::make_unique<Arc>(Position{}, arcDimensions, 270, 90);
             topRight->Fill();
 
-            auto bottomLeft = std::make_unique<Arc>(
-                Position{m_position.x, m_position.y + m_dimensions.height - m_style.borderRadius * 2},
-                arcDimensions, 90, 90);
+            auto bottomLeft = std::make_unique<Arc>(Position{}, arcDimensions, 90, 90);
             bottomLeft->Fill();
 
-            auto bottomRight = std::make_unique<Arc>(
-                Position{m_position.x + m_dimensions.width - m_style.borderRadius * 2, m_position.y + m_dimensions.height - m_style.borderRadius * 2},
-                arcDimensions, 0, 90);
+            auto bottomRight = std::make_unique<Arc>(Position{},arcDimensions, 0, 90);
             bottomRight->Fill();
 
             AddDrawable(std::move(topLeft), &m_topLeftCornerIndex);
@@ -168,6 +281,8 @@ namespace XWindowLib
         AddDrawable(std::move(left), &m_leftIndex);
         AddDrawable(std::move(fill1), &m_fill1Index);
         AddDrawable(std::move(fill2), &m_fill2Index);
+
+        UpdateSize();
     }
 
     #pragma region hovering

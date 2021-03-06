@@ -2,48 +2,61 @@
 
 namespace XWindowLib
 {
-    std::shared_ptr<FontManager> FontManager::s_fontManager;
+    FontManager FontManager::s_fontManager;
 
-    std::shared_ptr<FontManager> FontManager::GetFontManager(std::shared_ptr<Display> display)
+    FontManager& FontManager::GetFontManager(std::shared_ptr<Display> display)
     {
-        if (!s_fontManager)
+        if (!s_fontManager.m_isInitialized)
         {
-            s_fontManager = std::make_shared<FontManager>(display);
+            s_fontManager = FontManager{display};
         }
-        return FontManager::s_fontManager;
+        return s_fontManager;
     }
 
-    XFontStruct* FontManager::GetFont(std::string name)
+    Font FontManager::LoadFont(const std::string& name)
     {
-        auto* font = m_fontMap[name];
-        
+        Font font = m_fontMap[name];
         if (!font)
         {
-            m_fontMap[name] = XLoadQueryFont(m_display.get(), name.c_str());
-            return m_fontMap[name];
+            font = XLoadFont(m_display.get(), name.c_str());
+            m_fontMap[name] = font;
         }
-        else
-        {
-            return font;
-        }
+        return font;
     }
 
-    int FontManager::GetTextWidth(std::string font, std::string text)
+    void FontManager::SetFont(const GC& graphicsContext, const std::string& fontName)
+    {
+        Font font = LoadFont(fontName);
+        XSetFont(m_display.get(), graphicsContext, font);
+    }
+
+    XFontStruct* FontManager::GetFont(const std::string& name)
+    {
+        Font font = LoadFont(name);
+
+        return XQueryFont(m_display.get(), font);
+    }
+
+    int FontManager::GetTextWidth(const std::string& font, const std::string& text)
     {
         return XTextWidth(GetFont(font), text.c_str(), text.length());
     }
 
-    int FontManager::GetFontHeight(std::string font)
+    int FontManager::GetFontHeight(const std::string& font)
     {
         const auto& fontStruct = GetFont(font);
         return fontStruct->max_bounds.ascent + fontStruct->max_bounds.descent;
     }
 
-    FontManager::~FontManager()
+    void FontManager::FreeFonts()
     {
         for (auto &&font : m_fontMap)
         {
-            XFreeFont(m_display.get(), font.second);
+            XFontStruct* fontStruct = XQueryFont(m_display.get(), font.second);
+            if (fontStruct)
+            {
+                XFreeFont(m_display.get(), fontStruct);
+            }
         }
         m_fontMap.clear();
     }

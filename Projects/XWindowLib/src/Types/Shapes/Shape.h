@@ -15,7 +15,8 @@ namespace XWindowLib {
     protected:
         GC m_graphicsContext;
 
-        bool m_fill;
+        bool m_fill = false;
+        int m_lineWidth = 0;
 
     private:
         void InitColor();

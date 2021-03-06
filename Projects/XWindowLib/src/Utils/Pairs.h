@@ -10,6 +10,10 @@ namespace XWindowLib
         int width = 0;
         int height = 0;
 
+        bool automatic = false;
+
+        static const Dimensions AUTO;
+
         Dimensions(int width, int height)
         {
             Dimensions::width = width;
@@ -21,6 +25,13 @@ namespace XWindowLib
             height = pair.second;
         }
         Dimensions(){};
+        Dimensions(bool automatic) { Dimensions::automatic = automatic; }
+        Dimensions(int width, int height, bool automatic)
+        {
+            Dimensions::width = width;
+            Dimensions::height = height;
+            Dimensions::automatic = automatic;
+        }
 
         bool operator==(Dimensions other)
         {
@@ -104,6 +115,8 @@ namespace XWindowLib
             return !(*this == other);
         }
     };
+
+    typedef Margin Padding;
 }
 
 #endif

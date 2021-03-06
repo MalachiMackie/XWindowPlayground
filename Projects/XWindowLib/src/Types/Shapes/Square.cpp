@@ -32,4 +32,18 @@ namespace XWindowLib
     {
         Set({x, y}, {width, height});
     }
+
+    void Square::SetBorderWidth(int borderWidth)
+    {
+        if (m_lineWidth == borderWidth)
+            return;
+            
+        m_lineWidth = borderWidth;
+        if (m_isInitialized)
+        {
+            XGCValues values;
+            values.line_width = borderWidth;
+            XChangeGC(m_display.get(), m_graphicsContext, GCLineWidth, &values);
+        }
+    }
 }

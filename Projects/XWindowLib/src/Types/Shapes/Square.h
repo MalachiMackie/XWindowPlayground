@@ -17,6 +17,8 @@ namespace XWindowLib
         virtual void Draw() override;
         void Set(int x, int y, int width, int height);
         void Set(Position pos, Dimensions dimensions);
+        void SetBorderWidth(int borderWidth);
+        int GetBorderWidth() { return m_lineWidth; }
     };
 }
 

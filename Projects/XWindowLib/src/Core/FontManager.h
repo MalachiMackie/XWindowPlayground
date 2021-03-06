@@ -10,25 +10,42 @@ namespace XWindowLib
     class FontManager
     {
     private:
-        static std::shared_ptr<FontManager> s_fontManager;
+        static FontManager s_fontManager;
 
     public:
-        static std::shared_ptr<FontManager> GetFontManager(std::shared_ptr<Display> display);
+        static FontManager& GetFontManager(std::shared_ptr<Display> display);
 
     private:
         std::shared_ptr<Display> m_display;
+        bool m_isInitialized = false;
 
-        std::map<std::string, XFontStruct*> m_fontMap;
+        Font LoadFont(const std::string& name);
+        std::map<std::string, Font> m_fontMap;
+
+    private:
+
+        FontManager(std::shared_ptr<Display> display)
+            : m_display{display}, m_isInitialized{true}
+            {};
+        FontManager()
+            : m_isInitialized {false}
+            {}
+
+
+        FontManager(const FontManager&) = delete;
+        FontManager& operator= (const FontManager&) = default;
+        
 
     public:
-        FontManager(std::shared_ptr<Display> display)
-            : m_display{display}{};
-        ~FontManager();
 
-        XFontStruct* GetFont(std::string name);
+        XFontStruct* GetFont(const std::string& name);
 
-        int GetTextWidth(std::string name, std::string text);
-        int GetFontHeight(std::string name);
+        void SetFont(const GC& graphicsContext, const std::string& fontName);
+
+        int GetTextWidth(const std::string& name, const std::string& text);
+        int GetFontHeight(const std::string& name);
+
+        void FreeFonts();
 
     };
 }

@@ -19,24 +19,89 @@ namespace XWindowLib
             auto square = std::make_unique<Square>(position, dimensions);
             AddDrawable(std::move(square), &m_borderIndex);
         }
-        m_textItem.nchars = m_content.size();
-        m_textItem.chars = new char[m_content.length()];
+        m_textItem = new XTextItem;
+        m_textItem->delta = 0;
+        m_textItem->nchars = m_content.length();
+        m_textItem->chars = new char[m_content.length()];
         
-        strcpy(m_textItem.chars, m_content.c_str());
+        strcpy(m_textItem->chars, m_content.c_str());
     }
 
     TextBox::TextBox(std::string content)
         : m_content{content}
     {
         SetPosition(Position{});
-        SetDimensions(Dimensions{});
+        SetDimensions(Dimensions::AUTO);
         m_textAlignment = TextAlignment::LEFT;
         m_verticalAlignment = VerticalAlignment::MIDDLE;
 
-        m_textItem.nchars = m_content.size();
-        m_textItem.chars = new char[m_content.length()];
+        m_textItem = new XTextItem;
+        m_textItem->delta = 0;
+        m_textItem->nchars = m_content.size();
+        m_textItem->chars = new char[m_content.length()];
 
-        strcpy(m_textItem.chars, m_content.c_str());
+        strcpy(m_textItem->chars, m_content.c_str());
+    }
+
+    void TextBox::SetText(std::string text)
+    {
+        m_content = text;
+        if (!m_textItem)
+        {
+            m_textItem = new XTextItem;
+        }
+        m_textItem->nchars = m_content.size();
+
+        delete[] m_textItem->chars;
+
+        m_textItem->chars = new char[m_content.length()];
+
+        strcpy(m_textItem->chars, m_content.c_str());
+        CalculateDimensions();
+    }
+
+    void TextBox::SetBorderWidth(int borderWidth)
+    {
+        if (borderWidth < 0)
+        {
+            throw "Border width must be greater than or equal to 0";
+        }
+        m_borderWidth = borderWidth;
+
+        if (m_borderIndex < 0)
+        {
+            auto square = std::make_unique<Square>(m_position, m_dimensions);
+            square->SetBorderWidth(m_borderWidth);
+            AddDrawable(std::move(square), &m_borderIndex);
+        }
+        else
+        {
+            auto& drawable = m_drawables[m_borderIndex];
+            Square* square = dynamic_cast<Square*>(drawable.get());
+            if (square)
+            {
+                square->SetBorderWidth(m_borderWidth);
+            }
+        }
+    }
+
+    void TextBox::CalculateDimensions()
+    {
+        if (!m_isInitialized || !m_dimensions.automatic)
+            return;
+
+        Dimensions tempDimensions = m_dimensions;
+
+        const auto& font = FontManager::GetFontManager(m_display).GetFont(m_fontName);
+        tempDimensions.height = font->max_bounds.ascent + font->max_bounds.descent;
+        tempDimensions.width = FontManager::GetFontManager(m_display).GetTextWidth(m_fontName, m_content);
+        if (m_borderIndex >= 0)
+        {
+            const auto& border = m_drawables[m_borderIndex];
+            border->SetDimensions(tempDimensions);
+            border->SetPosition(m_position);
+        }
+        SetDimensions(tempDimensions);
     }
 
     void TextBox::Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window)
@@ -46,36 +111,20 @@ namespace XWindowLib
             return;
         }
         Widget::Init(display, window);
-        InitFontManager(display);
         m_graphicsContext = XCreateGC(m_display.get(), *m_window, 0, nullptr);
                 
-        const auto& font = m_fontManager->GetFont(m_fontName);
-        
-        XSetFont(m_display.get(), m_graphicsContext, font->fid);
+        FontManager::GetFontManager(m_display).SetFont(m_graphicsContext, m_fontName);
 
-        if (m_dimensions.height <= 0)
-        {
-            m_dimensions.height = font->max_bounds.ascent + font->max_bounds.descent;
-        }
-        if (m_dimensions.width <= 0)
-        {
-            m_dimensions.width = m_fontManager->GetTextWidth(m_fontName, m_content);
-        }
-        if (m_borderWidth > 0)
-        {
-            const std::unique_ptr<Drawable>& border = m_drawables[m_borderIndex];
-            border->SetDimensions(m_dimensions);
-            border->SetPosition(m_position);
-        }
+        CalculateDimensions();
     }
 
     void TextBox::Draw()
     {
-        if (m_display && m_window)
+        if (m_isInitialized)
         {
             Widget::Draw();
-            int textWidth = m_fontManager->GetTextWidth(m_fontName, m_content);
-            int textHeight = m_fontManager->GetFontHeight(m_fontName);
+            int textWidth = FontManager::GetFontManager(m_display).GetTextWidth(m_fontName, m_content);
+            int textHeight = FontManager::GetFontManager(m_display).GetFontHeight(m_fontName);
             int x;
             int y = m_position.y + textHeight;
             switch (m_textAlignment)
@@ -97,14 +146,9 @@ namespace XWindowLib
             m_graphicsContext,
             x,
             y,
-            &m_textItem,
+            m_textItem,
             1);
         }
-    }
-
-    TextBox::~TextBox()
-    {
-        delete m_textItem.chars;
     }
 
     void TextBox::SetPosition(Position position)
@@ -119,7 +163,7 @@ namespace XWindowLib
 
     void TextBox::SetDimensions(Dimensions dimensions)
     {
-        m_dimensions = dimensions;
+        Drawable::SetDimensions(dimensions);
         if (m_borderIndex >= 0) {
             const auto& border = m_drawables[m_borderIndex];
             border->SetDimensions(m_dimensions);

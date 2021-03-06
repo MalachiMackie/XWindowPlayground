@@ -67,6 +67,8 @@ namespace XWindowLib
         std::function<void(void)> m_onRightClickRelease;
         std::function<void(void)> m_onMiddleClickRelease;
 
+        Padding m_padding = Padding{10, 0};
+
         static const Color s_defaultColor;
         
     private:
@@ -74,6 +76,7 @@ namespace XWindowLib
         void ApplyColor(Color color);
         void ApplyStyle(const Style& style);
         void SetContentPosition();
+        void UpdateSize();
 
     public:
         Button(Position position, Dimensions dimensions);
@@ -117,6 +120,10 @@ namespace XWindowLib
 
         void SetTextAlignment(TextAlignment textAlignment);
         void SetTextVerticalAlignment(VerticalAlignment verticalAlignment);
+
+        void SetText(std::string text);
+
+        virtual void SetDimensions(Dimensions dimensions) override;
 
         virtual void Init(std::shared_ptr<Display> display, std::shared_ptr<Window> window) override;
     };

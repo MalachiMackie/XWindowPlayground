@@ -9,7 +9,11 @@ namespace XWindowLib
         if (!m_isInitialized)
         {
             Drawable::Init(display, window);
-            m_graphicsContext = XCreateGC(display.get(), *window, 0, 0);
+
+            XGCValues values;
+            values.line_width = m_lineWidth;
+
+            m_graphicsContext = XCreateGC(display.get(), *window, GCLineWidth, &values);
 
             if (m_initColorOnInit)
             {
